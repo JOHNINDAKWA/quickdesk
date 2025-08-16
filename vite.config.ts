@@ -8,6 +8,7 @@ const __dirname  = dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
+  base: "/",  
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: {
