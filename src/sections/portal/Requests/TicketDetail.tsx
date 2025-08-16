@@ -143,6 +143,11 @@ export default function TicketDetail() {
     );
   }
 
+  if (!ticket) {
+  return ("not found");
+}
+const t = ticket; 
+
   const isLocked = ticket.status === "solved" || ticket.status === "closed";
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -159,7 +164,7 @@ export default function TicketDetail() {
     await new Promise((r) => setTimeout(r, 600));
     const newMsg: Message = {
       id: Math.random().toString(36).slice(2),
-      author: { name: ticket.requester.name, email: ticket.requester.email, role: "requester" },
+      author: { name: t.requester.name, email: t.requester.email, role: "requester" },
       createdAt: new Date().toISOString(),
       html: replyHtml,
       attachments: files.map((f, i) => ({ id: `u${i}`, name: f.name, size: humanSize(f.size) })),

@@ -11,7 +11,12 @@ import {
 
 import "./Layout.css";
 
-type NavItem = { to: string; label: string; icon: JSX.Element; exact?: boolean };
+// Layout.tsx
+import type { ReactNode } from 'react';
+
+type NavItem = { to: string; label: string; icon: ReactNode; exact?: boolean };
+
+
 type NavSection = { label: string; items: NavItem[] };
 
 export default function HelpdeskLayout() {

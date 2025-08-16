@@ -41,7 +41,10 @@ type User = {
   avatarUrl?: string;
 };
 
-// --- Seed data (Kenyan flavor)
+type SortKey = "recent" | "name" | "role" | "activity";
+type ConfirmKind = "delete" | "suspend" | "activate";
+
+// --- Seed data
 const seed: User[] = [
   {
     id: "u1",
@@ -143,16 +146,13 @@ export default function SAUsers() {
   const [q, setQ] = useState("");
   const [role, setRole] = useState<UserRole | "all">("all");
   const [status, setStatus] = useState<UserStatus | "all">("all");
-  const [sort, setSort] = useState<"recent" | "name" | "role" | "activity">(
-    "recent"
-  );
+  const [sort, setSort] = useState<SortKey>("recent");
 
-  // selection
   const [selected, setSelected] = useState<Record<string, boolean>>({});
 
   // modals
   const [showForm, setShowForm] = useState<null | { mode: "add" | "edit"; user?: User }>(null);
-  const [confirm, setConfirm] = useState<null | { type: "delete" | "suspend" | "activate"; user: User }>(null);
+  const [confirmModal, setConfirmModal] = useState<null | { type: ConfirmKind; user: User }>(null);
 
   const filtered = useMemo(() => {
     let out = users.filter((u) => {
@@ -171,11 +171,8 @@ export default function SAUsers() {
           return a.name.localeCompare(b.name);
         case "role":
           return a.role.localeCompare(b.role);
-        case "activity": {
-          const av = a.ticketsResolved;
-          const bv = b.ticketsResolved;
-          return bv - av;
-        }
+        case "activity":
+          return b.ticketsResolved - a.ticketsResolved;
         case "recent":
         default:
           return +new Date(b.createdAt) - +new Date(a.createdAt);
@@ -196,25 +193,32 @@ export default function SAUsers() {
     setSelected(next);
   }
 
-  function upsertUser(payload: Omit<User, "id" | "createdAt" | "ticketsResolved"> & Partial<User>) {
-    // add or edit based on id presence
-    if (payload.id) {
-      setUsers((prev) => prev.map((u) => (u.id === payload.id ? { ...u, ...payload } as User : u)));
-    } else {
-      const nu: User = {
-        id: Math.random().toString(36).slice(2),
-        name: payload.name!,
-        email: payload.email!,
-        role: (payload.role || "Agent") as UserRole,
-        status: (payload.status || "active") as UserStatus,
-        lastActive: null,
-        createdAt: new Date().toISOString(),
-        ticketsResolved: 0,
-        teams: payload.teams || [],
-        avatarUrl: payload.avatarUrl || "",
-      };
-      setUsers((prev) => [nu, ...prev]);
-    }
+  // --- CRUD helpers (split add / update to satisfy TS)
+  function addUser(input: {
+    name: string;
+    email: string;
+    role?: UserRole;
+    status?: UserStatus;
+    teams?: string[];
+    avatarUrl?: string;
+  }) {
+    const nu: User = {
+      id: Math.random().toString(36).slice(2),
+      name: input.name,
+      email: input.email,
+      role: input.role ?? "Agent",
+      status: input.status ?? "active",
+      lastActive: null,
+      createdAt: new Date().toISOString(),
+      ticketsResolved: 0,
+      teams: input.teams ?? [],
+      avatarUrl: input.avatarUrl ?? "",
+    };
+    setUsers((prev) => [nu, ...prev]);
+  }
+
+  function updateUser(id: string, patch: Partial<User>) {
+    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...patch } : u)));
   }
 
   function removeUser(id: string) {
@@ -233,7 +237,16 @@ export default function SAUsers() {
   }
 
   function exportCSV() {
-    const header = ["name", "email", "role", "status", "lastActive", "createdAt", "ticketsResolved", "teams"].join(",");
+    const header = [
+      "name",
+      "email",
+      "role",
+      "status",
+      "lastActive",
+      "createdAt",
+      "ticketsResolved",
+      "teams",
+    ].join(",");
     const rows = users.map((u) =>
       [
         `"${u.name.replace(/"/g, '""')}"`,
@@ -250,7 +263,9 @@ export default function SAUsers() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "users.csv"; a.click();
+    a.href = url;
+    a.download = "users.csv";
+    a.click();
     URL.revokeObjectURL(url);
   }
 
@@ -266,10 +281,17 @@ export default function SAUsers() {
           <button className="btn" onClick={exportCSV} title="Export CSV">
             <FiDownload /> Export
           </button>
-          <button className="btn" onClick={() => alert("Import coming soon")} title="Import CSV">
+          <button
+            className="btn"
+            onClick={() => alert("Import coming soon")}
+            title="Import CSV"
+          >
             <FiUpload /> Import
           </button>
-          <button className="btn btn-primary" onClick={() => setShowForm({ mode: "add" })}>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowForm({ mode: "add" })}
+          >
             <FiUserPlus /> Add User
           </button>
         </div>
@@ -283,14 +305,22 @@ export default function SAUsers() {
             <button className="btn" onClick={() => bulkUpdate({ status: "active" })}>
               <FiPlayCircle /> Activate
             </button>
-            <button className="btn" onClick={() => bulkUpdate({ status: "suspended" })}>
+            <button
+              className="btn"
+              onClick={() => bulkUpdate({ status: "suspended" })}
+            >
               <FiPauseCircle /> Suspend
             </button>
             <button
               className="btn"
               onClick={() => {
-                const role = prompt("Set role to (Owner, Client Admin, Helpdesk Admin, Agent, Analyst, Billing, Viewer):", "Agent") as UserRole | null;
-                if (role && ALL_ROLES.includes(role)) bulkUpdate({ role });
+                const nextRole = prompt(
+                  "Set role to (Owner, Client Admin, Helpdesk Admin, Agent, Analyst, Billing, Viewer):",
+                  "Agent"
+                ) as UserRole | null;
+                if (nextRole && ALL_ROLES.includes(nextRole)) {
+                  bulkUpdate({ role: nextRole });
+                }
               }}
             >
               Role…
@@ -298,7 +328,7 @@ export default function SAUsers() {
             <button
               className="btn"
               onClick={() => {
-                if (!confirm("Delete selected users? This cannot be undone.")) return;
+                if (!window.confirm("Delete selected users? This cannot be undone.")) return;
                 setUsers((prev) => prev.filter((u) => !selectedIds.includes(u.id)));
                 setSelected({});
               }}
@@ -323,7 +353,10 @@ export default function SAUsers() {
         <div className="qdus-selects">
           <label className="qdus-mini">
             <span>Role</span>
-            <select value={role} onChange={(e) => setRole(e.target.value as UserRole | "all")}>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as UserRole | "all")}
+            >
               <option value="all">All</option>
               {ALL_ROLES.map((r) => (
                 <option key={r}>{r}</option>
@@ -333,7 +366,10 @@ export default function SAUsers() {
 
           <label className="qdus-mini">
             <span>Status</span>
-            <select value={status} onChange={(e) => setStatus(e.target.value as UserStatus | "all")}>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as UserStatus | "all")}
+            >
               <option value="all">All</option>
               <option value="active">Active</option>
               <option value="invited">Invited</option>
@@ -343,7 +379,10 @@ export default function SAUsers() {
 
           <label className="qdus-mini">
             <span>Sort</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value as any)}>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+            >
               <option value="recent">Most recent</option>
               <option value="name">Name (A–Z)</option>
               <option value="role">Role</option>
@@ -361,7 +400,10 @@ export default function SAUsers() {
               <th className="w-check">
                 <input
                   type="checkbox"
-                  checked={filtered.length > 0 && selectedIds.length === filtered.length}
+                  checked={
+                    filtered.length > 0 &&
+                    selectedIds.length === filtered.length
+                  }
                   onChange={(e) => toggleSelectAll(e.currentTarget.checked)}
                   aria-label="Select all"
                 />
@@ -382,14 +424,19 @@ export default function SAUsers() {
                   <input
                     type="checkbox"
                     checked={!!selected[u.id]}
-                    onChange={(e) => setSelected((s) => ({ ...s, [u.id]: e.currentTarget.checked }))}
+                    onChange={(e) =>
+                      setSelected((s) => ({ ...s, [u.id]: e.currentTarget.checked }))
+                    }
                     aria-label={`Select ${u.name}`}
                   />
                 </td>
 
                 <td>
                   <div className="qdus-usercell">
-                    <div className="qdus-avatar" style={{ background: "var(--surface-3)" }}>
+                    <div
+                      className="qdus-avatar"
+                      style={{ background: "var(--surface-3)" }}
+                    >
                       {u.avatarUrl ? (
                         <img src={u.avatarUrl} alt="" />
                       ) : (
@@ -398,7 +445,9 @@ export default function SAUsers() {
                     </div>
                     <div className="qdus-usermeta">
                       <div className="qdus-username">{u.name}</div>
-                      <div className="qdus-useremail"><FiMail /> {u.email}</div>
+                      <div className="qdus-useremail">
+                        <FiMail /> {u.email}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -410,14 +459,18 @@ export default function SAUsers() {
                 </td>
 
                 <td>
-                  <span className={`qdus-status qdus-status--${u.status}`}>{u.status}</span>
+                  <span className={`qdus-status qdus-status--${u.status}`}>
+                    {u.status}
+                  </span>
                 </td>
 
                 <td>
                   {u.teams.length ? (
                     <div className="qdus-teamlist">
                       {u.teams.map((t) => (
-                        <span className="qdus-chip qdus-chip--soft" key={t}>{t}</span>
+                        <span className="qdus-chip qdus-chip--soft" key={t}>
+                          {t}
+                        </span>
                       ))}
                     </div>
                   ) : (
@@ -430,23 +483,44 @@ export default function SAUsers() {
 
                 <td className="w-actions">
                   <div className="qdus-rowactions">
-                 
                     {u.status === "suspended" ? (
-                      <button className="btn btn-ghost" onClick={() => setConfirm({ type: "activate", user: u })}>
+                      <button
+                        className="btn btn-ghost"
+                        onClick={() =>
+                          setConfirmModal({ type: "activate", user: u })
+                        }
+                      >
                         <FiPlayCircle /> Activate
                       </button>
                     ) : (
-                      <button className="btn btn-ghost warn" onClick={() => setConfirm({ type: "suspend", user: u })}>
+                      <button
+                        className="btn btn-ghost warn"
+                        onClick={() =>
+                          setConfirmModal({ type: "suspend", user: u })
+                        }
+                      >
                         <FiPauseCircle /> Suspend
                       </button>
                     )}
-                       <button className="btn btn-ghost" onClick={() => setShowForm({ mode: "edit", user: u })}>
-                      <FiEdit2 /> 
+                    <button
+                      className="btn btn-ghost"
+                      onClick={() => setShowForm({ mode: "edit", user: u })}
+                      title="Edit"
+                    >
+                      <FiEdit2 />
                     </button>
-                    <button className="btn btn-ghost danger" onClick={() => setConfirm({ type: "delete", user: u })}>
-                      <FiTrash2 /> 
+                    <button
+                      className="btn btn-ghost danger"
+                      onClick={() => setConfirmModal({ type: "delete", user: u })}
+                      title="Delete"
+                    >
+                      <FiTrash2 />
                     </button>
-                    <button className="btn btn-icon" title="More" onClick={() => alert("Reset password link sent!")}>
+                    <button
+                      className="btn btn-icon"
+                      title="Send reset password link"
+                      onClick={() => alert("Reset password link sent!")}
+                    >
                       <FiKey />
                     </button>
                     <button className="btn btn-icon" title="More">
@@ -475,23 +549,44 @@ export default function SAUsers() {
           user={showForm.user}
           onClose={() => setShowForm(null)}
           onSave={(payload) => {
-            upsertUser(payload);
+            if (showForm.user) {
+              // edit
+              updateUser(showForm.user.id, {
+                name: payload.name,
+                email: payload.email,
+                role: payload.role,
+                status: payload.status,
+                teams: payload.teams,
+                avatarUrl: payload.avatarUrl,
+              });
+            } else {
+              // add
+              addUser({
+                name: payload.name,
+                email: payload.email,
+                role: payload.role,
+                status: payload.status,
+                teams: payload.teams,
+                avatarUrl: payload.avatarUrl,
+              });
+            }
             setShowForm(null);
           }}
         />
       )}
 
       {/* Confirm Modals */}
-      {confirm && (
+      {confirmModal && (
         <ConfirmModal
-          kind={confirm.type}
-          user={confirm.user}
-          onClose={() => setConfirm(null)}
+          kind={confirmModal.type}
+          user={confirmModal.user}
+          onClose={() => setConfirmModal(null)}
           onConfirm={() => {
-            if (confirm.type === "delete") removeUser(confirm.user.id);
-            if (confirm.type === "suspend") upsertUser({ ...confirm.user, status: "suspended" });
-            if (confirm.type === "activate") upsertUser({ ...confirm.user, status: "active" });
-            setConfirm(null);
+            const u = confirmModal.user;
+            if (confirmModal.type === "delete") removeUser(u.id);
+            if (confirmModal.type === "suspend") updateUser(u.id, { status: "suspended" });
+            if (confirmModal.type === "activate") updateUser(u.id, { status: "active" });
+            setConfirmModal(null);
           }}
         />
       )}
@@ -510,24 +605,38 @@ function UserFormModal({
   mode: "add" | "edit";
   user?: User;
   onClose: () => void;
-  onSave: (payload: Partial<User> & { name: string; email: string }) => void;
+  onSave: (payload: {
+    name: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+    teams: string[];
+    avatarUrl?: string;
+  }) => void;
 }) {
-  const [form, setForm] = useState<Partial<User>>(
-    user || {
-      name: "",
-      email: "",
-      role: "Agent",
-      status: "active",
-      teams: [],
-    }
-  );
+  const [form, setForm] = useState<{
+    name: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+    teams: string[];
+    avatarUrl?: string;
+  }>({
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    role: user?.role ?? "Agent",
+    status: user?.status ?? "active",
+    teams: user?.teams ?? [],
+    avatarUrl: user?.avatarUrl ?? "",
+  });
+
   const [pwd, setPwd] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const errs = {
-    name: !form.name?.trim(),
-    email: !emailOk(form.email || ""),
+    name: !form.name.trim(),
+    email: !emailOk(form.email),
     password: mode === "add" ? pwd.length < 8 || pwd !== pwd2 : false,
   };
   const hasErrors = Object.values(errs).some(Boolean);
@@ -536,9 +645,12 @@ function UserFormModal({
     e.preventDefault();
     if (hasErrors) return;
     onSave({
-      ...form,
-      id: user?.id,
-      teams: form.teams || [],
+      name: form.name.trim(),
+      email: form.email.trim(),
+      role: form.role,
+      status: form.status,
+      teams: form.teams,
+      avatarUrl: form.avatarUrl,
     });
   }
 
@@ -558,7 +670,7 @@ function UserFormModal({
               <span className="qdus-label">Full Name</span>
               <div className="qdus-input">
                 <input
-                  value={form.name || ""}
+                  value={form.name}
                   onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   placeholder="Jane Doe"
@@ -573,7 +685,7 @@ function UserFormModal({
               <div className="qdus-input">
                 <input
                   type="email"
-                  value={form.email || ""}
+                  value={form.email}
                   onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   placeholder="user@company.co.ke"
@@ -589,7 +701,7 @@ function UserFormModal({
               <span className="qdus-label">Role</span>
               <div className="qdus-input">
                 <select
-                  value={form.role || "Agent"}
+                  value={form.role}
                   onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as UserRole }))}
                 >
                   {ALL_ROLES.map((r) => (
@@ -603,7 +715,7 @@ function UserFormModal({
               <span className="qdus-label">Status</span>
               <div className="qdus-input">
                 <select
-                  value={form.status || "active"}
+                  value={form.status}
                   onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as UserStatus }))}
                 >
                   <option value="active">Active</option>
@@ -617,9 +729,15 @@ function UserFormModal({
               <span className="qdus-label">Teams (comma separated)</span>
               <div className="qdus-input">
                 <input
-                  value={(form.teams || []).join(", ")}
+                  value={form.teams.join(", ")}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, teams: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) }))
+                    setForm((f) => ({
+                      ...f,
+                      teams: e.target.value
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean),
+                    }))
                   }
                   placeholder="Tier 1, Escalations"
                 />
@@ -664,7 +782,8 @@ function UserFormModal({
               </div>
 
               <label className="qdus-check">
-                <input type="checkbox" defaultChecked /> <span>Require password reset on first login</span>
+                <input type="checkbox" defaultChecked />{" "}
+                <span>Require password reset on first login</span>
               </label>
             </>
           )}
@@ -690,17 +809,17 @@ function ConfirmModal({
   onClose,
   onConfirm,
 }: {
-  kind: "delete" | "suspend" | "activate";
+  kind: ConfirmKind;
   user: User;
   onClose: () => void;
   onConfirm: () => void;
 }) {
-  const titles: Record<typeof kind, string> = {
+  const titles: Record<ConfirmKind, string> = {
     delete: "Delete user?",
     suspend: "Suspend user?",
     activate: "Activate user?",
   };
-  const descs: Record<typeof kind, string> = {
+  const descs: Record<ConfirmKind, string> = {
     delete: "This permanently removes the user and their access.",
     suspend: "User will be unable to sign in until activated.",
     activate: "User will immediately regain access.",
@@ -724,7 +843,12 @@ function ConfirmModal({
           <button className="btn" onClick={onClose}>
             <FiX /> Cancel
           </button>
-          <button className={`btn ${kind === "delete" ? "btn-danger" : kind === "suspend" ? "warn" : "btn-primary"}`} onClick={onConfirm}>
+          <button
+            className={`btn ${
+              kind === "delete" ? "btn-danger" : kind === "suspend" ? "warn" : "btn-primary"
+            }`}
+            onClick={onConfirm}
+          >
             {kind === "delete" ? <FiTrash2 /> : kind === "suspend" ? <FiPauseCircle /> : <FiPlayCircle />}
             {kind === "delete" ? "Delete" : kind === "suspend" ? "Suspend" : "Activate"}
           </button>

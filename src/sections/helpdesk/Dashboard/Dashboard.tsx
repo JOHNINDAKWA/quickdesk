@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import {
   ResponsiveContainer,
-  AreaChart,
   Area,
   LineChart,
   Line,
@@ -160,35 +159,21 @@ const myQueue = [
 /** -------------------- component -------------------- */
 export default function HKDashboard() {
   const kpis = useMemo(() => {
-    const opened = days.reduce((a, b) => a + b.opened, 0);
-    const solved = days.reduce((a, b) => a + b.solved, 0);
-    const breaches = days.reduce((a, b) => a + b.breaches, 0);
+  const opened  = days.reduce((a,b) => a + b.opened, 0);
+  const solved  = days.reduce((a,b) => a + b.solved, 0);
+  const breaches= days.reduce((a,b) => a + b.breaches, 0);
+  const backlog = days[days.length - 1].backlog;
+  const frtAvg  = Math.round(days.reduce((a,b) => a + b.frt, 0) / days.length);
 
-    const backlog = days[days.length - 1].backlog; // carry-over tickets
-    const unresolved = Math.max(0, opened - solved); // last 30d unresolved total
+  // add the ones you display:
+  const needAns = Math.max(0, Math.round(opened * 0.22 - solved * 0.08));
+  const waiting = Math.max(0, Math.round(opened * 0.15));
+  const assigned= 42; // demo
+  const resolved= solved;
 
-    // derive some portal-ish counts (tweak later when wired to API)
-    const waiting = Math.round(unresolved * 0.1); // waiting for agent reply
-    const needAns = Math.max(0, unresolved - waiting); // need customer answer
-    const assigned = agents[0]?.open ?? 0; // "assigned to me" demo
-    const resolved = solved; // alias for naming in UI
+  return { opened, solved, breaches, backlog, frtAvg, needAns, waiting, assigned, resolved };
+}, []);
 
-    const frtAvg = Math.round(
-      days.reduce((a, b) => a + b.frt, 0) / days.length
-    );
-
-    return {
-      opened,
-      solved,
-      breaches,
-      backlog,
-      frtAvg,
-      waiting,
-      needAns,
-      assigned,
-      resolved,
-    };
-  }, []);
 
   return (
     <div className="hdDash-root">
@@ -581,7 +566,6 @@ type KpiCardProps = {
 export function KpiCard({
   label,
   value,
-  badge,
   pct = 0,
   tone = "neutral",
   className,
