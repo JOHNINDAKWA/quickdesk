@@ -1,0 +1,85 @@
+/* Unique marketing prefix: mk- */
+.mk-app { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; }
+
+.mk-container { width: min(1200px, 100%); margin: 0 auto; padding: 0 16px; }
+
+/* Header */
+.mk-header {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--brand), transparent 92%), transparent 60%);
+}
+
+.mk-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+}
+
+.mk-logo {
+  display: inline-grid; grid-auto-flow: column; gap: 8px; align-items: center;
+  text-decoration: none; color: var(--text); font-weight: 800; letter-spacing: .2px;
+}
+.mk-logo__icon {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--brand); color: var(--on-brand);
+  box-shadow: var(--shadow-1);
+}
+.mk-logo__icon svg { width: 18px; height: 18px; }
+.mk-logo__text { font-size: 18px; }
+
+.mk-nav { display: flex; gap: 14px; justify-content: center; }
+.mk-nav a {
+  text-decoration: none; color: var(--text); padding: 8px 10px; border-radius: 10px;
+}
+.mk-nav a.active, .mk-nav a:hover {
+  background: color-mix(in oklab, var(--brand), transparent 88%);
+  color: var(--text);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+.mk-orgctl {
+  display: inline-grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center;
+  border: 1px solid var(--border); background: var(--surface-1); padding: 6px 8px; border-radius: 12px;
+}
+.mk-orgctl__label { font-size: 12px; color: var(--text-muted); }
+.mk-orgctl__input {
+  border: none; outline: none; background: transparent; color: var(--text); min-width: 120px;
+}
+.mk-orgctl__go {
+  width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px;
+  color: var(--text-muted); text-decoration: none;
+}
+.mk-orgctl__go:hover { background: var(--surface-2); color: var(--brand); }
+
+.mk-hero-glow {
+  position: absolute; inset: 0 0 auto 0; height: 220px;
+  background:
+    radial-gradient(60rem 24rem at 10% -20%,
+      color-mix(in oklab, var(--brand), transparent 78%), transparent),
+    radial-gradient(40rem 20rem at 110% 0%,
+      color-mix(in oklab, var(--brand-strong), transparent 78%), transparent);
+  pointer-events: none;
+}
+
+/* Main */
+.mk-main { padding: 24px 0 48px; }
+
+/* Footer */
+.mk-footer { border-top: 1px solid var(--border); background: var(--surface-1); }
+.mk-footbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 18px 0;
+}
+.mk-footlinks { display: flex; gap: 12px; flex-wrap: wrap; }
+.mk-footlinks a { text-decoration: none; color: var(--text-muted); }
+.mk-footlinks a:hover { color: var(--text); }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .mk-bar { grid-template-columns: 1fr; justify-items: start; gap: 10px; }
+  .mk-nav { justify-content: start; overflow:auto; }
+}

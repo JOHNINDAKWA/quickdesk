@@ -1,0 +1,470 @@
+/* =========================================================
+   Helpdesk Dashboard (hdDash-*)
+   - Compact typography
+   - Light/Dark via your global CSS variables
+   - Responsive 1col → 12col grid
+   ========================================================= */
+
+.hdDash-root {
+  padding: 14px;
+  font-size: 13px; /* compact global text */
+  color: var(--text);
+}
+
+/* ---------- Panels (inherits your .panel) ---------- */
+.panel.hdDash-card,
+.panel.hdDash-kpi {
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-1);
+}
+
+/* ---------- KPI strip ---------- */
+.hdDash-kpis {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  margin-bottom: 12px;
+}
+
+.hdDash-kpi {
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.hdDash-kpi__label {
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.hdDash-kpi__value {
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.hdDash-kpi__badge {
+  justify-self: start;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.hdDash-kpi__badge.is-good {
+  background: color-mix(in oklab, #2ecc71, transparent 85%);
+}
+.hdDash-kpi__badge.is-warn {
+  background: color-mix(in oklab, #ff6b6b, transparent 85%);
+}
+.hdDash-kpi__badge.is-neutral {
+  background: var(--surface-2);
+}
+
+/* ---------- Main grid ---------- */
+.hdDash-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* mobile default */
+  gap: 12px;
+}
+
+/* ---------- Card layout ---------- */
+.hdDash-card {
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.hdDash-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.hdDash-card__head h4 {
+  margin: 0;
+  font-size: 14px; /* compact title */
+  font-weight: 800;
+}
+.hdDash-note {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.hdDash-card__foot {
+  padding-top: 4px;
+}
+
+.hdDash-chart {
+  height: 220px;
+}
+.hdDash-chart.is-center {
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.hdDash-miniStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.hdDash-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 11px;
+}
+.hdDash-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+/* SLA split layout */
+.hdDash-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.hdDash-radialLabel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.hdDash-radialLabel b {
+  font-size: 18px;
+  font-weight: 800;
+}
+.hdDash-miniBars {
+  display: grid;
+  gap: 6px;
+}
+.hdDash-miniBars h5 {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+/* Radar/CSAT/others share .hdDash-chart height; adjust if needed per card */
+@media (min-width: 1400px) {
+  .hdDash-chart {
+    height: 240px;
+  }
+}
+
+/* ---------- Table block ---------- */
+.hdDash-table__wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+}
+
+.hdDash-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.hdDash-tbl th,
+.hdDash-tbl td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.hdDash-tbl thead th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.hdDash-tbl tbody tr:hover {
+  background: color-mix(in oklab, var(--surface-2), white 4%);
+}
+.hdDash-tbl .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+}
+.hdDash-tbl .truncate {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Priority & Status badges */
+.hdDash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: capitalize;
+  background: var(--surface-2);
+}
+.hdDash-badge.prio-urgent {
+  background: color-mix(in oklab, #ff6b6b, transparent 82%);
+}
+.hdDash-badge.prio-high {
+  background: color-mix(in oklab, #f59f00, transparent 82%);
+}
+.hdDash-badge.prio-normal {
+  background: color-mix(in oklab, var(--brand), transparent 86%);
+}
+.hdDash-badge.prio-low {
+  background: color-mix(in oklab, #94a3b8, transparent 84%);
+}
+
+.hdDash-badge.st-open {
+  background: color-mix(in oklab, var(--brand), transparent 86%);
+}
+.hdDash-badge.st-in_progress {
+  background: color-mix(in oklab, #4dabf7, transparent 84%);
+}
+.hdDash-badge.st-pending {
+  background: color-mix(in oklab, #f59f00, transparent 84%);
+}
+.hdDash-badge.st-solved {
+  background: color-mix(in oklab, #2ecc71, transparent 82%);
+}
+.hdDash-badge.st-closed {
+  background: color-mix(in oklab, #94a3b8, transparent 84%);
+}
+
+/* ===== KPI strip shell (soft background & spacing) ===== */
+.kpiPlus-row {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  padding: 10px;
+  border-radius: var(--radius-xl);
+  background: color-mix(in oklab, var(--brand), transparent 95%);
+  border: 1px solid var(--border);
+}
+
+/* ===== Card skin ===== */
+.kpiPlus {
+  position: relative;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--border);
+  --kpiPlus-color: var(--brand);
+}
+
+.kpiPlus__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kpiPlus__label { font-size: 12px; color: var(--text-muted); }
+.kpiPlus__value { font-size: 22px; font-weight: 800; margin-top: 4px; }
+
+/* ===== Circular % ring (right side) ===== */
+.kpiPlus__ring {
+  position: relative;
+  width: 46px; height: 46px; border-radius: 50%;
+  background:
+    conic-gradient(var(--kpiPlus-color) calc((var(--pct, 0) * 1%)), #e6eaee 0);
+}
+.kpiPlus__ring::after {
+  content: "";
+  position: absolute; inset: 6px;
+  background: var(--surface-1); border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.kpiPlus__ringText {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+}
+
+/* ===== Tiny sparkline (bottom-left) ===== */
+/* fixed sparkline */
+.kpiPlus__spark {
+  margin-top: 8px;
+  height: 18px;
+  width: 64px;
+  opacity: .85;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34'%3E%3Cpath d='M2 28 Q14 10,26 18 T50 16 T74 22 T98 14 T118 20' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  color: var(--kpiPlus-color);
+}
+
+
+/* ===== Tone colors (match screenshot) ===== */
+.kpiPlus[data-tone="green"]  { --kpiPlus-color: #2bb24c; }
+.kpiPlus[data-tone="red"]    { --kpiPlus-color: #e34d3a; }
+.kpiPlus[data-tone="blue"]   { --kpiPlus-color: #2388ff; }
+.kpiPlus[data-tone="orange"] { --kpiPlus-color: #ff9f1a; }
+.kpiPlus[data-tone="purple"] { --kpiPlus-color: #7e3ff2; }
+.kpiPlus[data-tone="neutral"]{ --kpiPlus-color: var(--brand); }
+
+/* Hover pop just a touch */
+.kpiPlus:hover {
+  border-color: color-mix(in oklab, var(--kpiPlus-color), var(--border) 60%);
+  transform: translateY(-1px);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+
+/* Donut container: gives the label a positioned box to sit in */
+.hdDash-donut {
+  position: relative;
+  height: 200px;            /* same as ResponsiveContainer height */
+  display: grid;
+  place-items: center;      /* keep the SVG centered if it shrinks */
+}
+
+/* Center the label over the donut */
+.hdDash-radialLabel {
+  position: absolute;
+  inset: 0;                 /* fill the donut box */
+  display: grid;
+  place-content: center;    /* both axes */
+  text-align: center;
+  pointer-events: none;     /* let tooltip hover pass through */
+}
+
+.hdDash-radialLabel b {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.hdDash-radialLabel .hdDash-note {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* (optional) scale up a bit on wider screens */
+@media (min-width: 1280px) {
+  .hdDash-donut { height: 220px; }
+  .hdDash-radialLabel b { font-size: 22px; }
+}
+
+/* Compact on narrow screens */
+@media (max-width: 560px) {
+  .kpiPlus__value { font-size: 20px; }
+  .kpiPlus__ring { width: 42px; height: 42px; }
+
+    .hdDash-root {
+    padding: 4px;
+  }
+}
+
+
+
+/* ---------- Responsiveness ---------- */
+
+/* ≥600px: KPIs in two columns, split block two-up */
+@media (min-width: 600px) {
+  .hdDash-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hdDash-split {
+    grid-template-columns: 1fr 1.1fr;
+    align-items: center;
+  }
+}
+
+/* ≥860px: KPIs 3-up, grid becomes 12 columns with designed spans */
+@media (min-width: 860px) {
+  .hdDash-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hdDash-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  /* Spans per card (order as in TSX):
+     1 trend, 2 channels, 3 backlog, 4 FRT, 5 SLA, 6 radar, 7 CSAT, 8 table */
+  .hdDash-grid > .hdDash-card:nth-child(1) {
+    grid-column: span 8;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(2) {
+    grid-column: span 4;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(3) {
+    grid-column: span 6;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(4) {
+    grid-column: span 6;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(5) {
+    grid-column: span 6;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(6) {
+    grid-column: span 6;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(7) {
+    grid-column: span 6;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(8) {
+    grid-column: 1 / -1;
+  } /* full width table */
+}
+
+/* ≥1200px: KPIs 5-up, slightly bigger trend/table heights */
+@media (min-width: 1200px) {
+  .hdDash-kpis {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .hdDash-grid > .hdDash-card:nth-child(1) .hdDash-chart {
+    height: 260px;
+  }
+  .hdDash-grid > .hdDash-card:nth-child(8) .hdDash-table__wrap {
+    max-height: 360px;
+  }
+}
+
+/* ≥1600px: give charts more breathing room */
+@media (min-width: 1600px) {
+  .hdDash-root {
+    padding: 18px;
+  }
+  .hdDash-chart {
+    height: 260px;
+  }
+  .hdDash-grid {
+    gap: 14px;
+  }
+  .hdDash-kpi__value {
+    font-size: 22px;
+  }
+}
+
+/* ---------- Small UI niceties ---------- */
+.hdDash-card:hover {
+  border-color: color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+.hdDash-tbl a {
+  color: inherit;
+  text-decoration: none;
+}
+.hdDash-tbl a:hover {
+  text-decoration: underline;
+}
+
+/* If your global dark mode uses darker borders, this keeps contrast tidy */
+html[data-theme="dark"] .hdDash-tbl thead th {
+  background: color-mix(in oklab, var(--surface-2), black 8%);
+}

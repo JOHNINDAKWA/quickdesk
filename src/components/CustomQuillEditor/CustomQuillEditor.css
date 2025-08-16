@@ -1,0 +1,13 @@
+.pt-quillhost .ql-toolbar.ql-snow {
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  background: var(--surface-2);
+}
+.pt-quillhost .ql-container.ql-snow {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: var(--surface-1);
+  min-height: 180px;
+  color: var(--text);
+}

@@ -1,0 +1,341 @@
+.orgd-page {
+  display: grid;
+  gap: 16px;
+}
+
+/* Header */
+.orgd-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-1);
+}
+.orgd-hero {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.orgd-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+.orgd-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.orgd-title {
+  margin: 0;
+  font-size: 22px;
+}
+.orgd-sub {
+  margin-top: 4px;
+  font-size: 13px;
+}
+.orgd-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.orgd-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn.warn {
+  color: color-mix(in oklab, orange, black 12%);
+}
+
+/* Tabs */
+.orgd-tabs {
+  display: flex;
+  gap: 6px;
+}
+.tab {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text);
+  cursor: pointer;
+}
+.tab.is-active {
+  background: color-mix(in oklab, var(--brand), transparent 85%);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+/* Grid */
+.orgd-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1.25fr 1fr;
+}
+@media (max-width: 1100px) {
+  .orgd-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orgd-card {
+  box-shadow: var(--shadow-1);
+}
+.orgd-card h3 {
+  margin: 0 0 10px;
+}
+
+/* Details / profile */
+.orgd-form {
+  display: grid;
+  gap: 12px;
+}
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.field input,
+.field select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  color: var(--text);
+  padding: 9px 10px;
+}
+.field-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 720px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.file {
+  display: inline-grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--border);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+.file input {
+  display: none;
+}
+.file.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.color-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+}
+
+.logo-row {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+}
+.logo-preview {
+  display: inline-grid;
+  grid-template-columns: 64px auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+
+
+
+
+
+/* Right column */
+.orgd-stats {
+  display: grid;
+  gap: 14px;
+}
+.orgd-stat .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.orgd-stat .stat-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.org-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.org-progress__fill {
+  height: 100%;
+  background: var(--brand);
+  border-right: 1px solid color-mix(in oklab, var(--brand), black 10%);
+}
+
+.spark {
+  width: 100%;
+  height: 60px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Activity list */
+.orgd-activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.orgd-activity li {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.orgd-activity .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand);
+}
+.orgd-activity .time {
+  font-size: 12px;
+}
+
+/* States / badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.plan--free {
+  background: color-mix(in oklab, var(--surface-2), white 10%);
+}
+.plan--standard {
+  background: color-mix(in oklab, var(--brand), transparent 85%);
+}
+.plan--premium {
+  background: color-mix(in oklab, var(--brand), transparent 75%);
+}
+.plan--enterprise {
+  background: color-mix(in oklab, gold, transparent 72%);
+}
+.status--active {
+  background: color-mix(in oklab, var(--brand), transparent 82%);
+}
+.status--suspended {
+  background: color-mix(in oklab, orange, transparent 75%);
+}
+
+/* Modal (confirm + admin) */
+.modal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+}
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity var(--transition-med);
+
+}
+.modal__panel {
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: min(580px, 92%);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-2);
+    z-index: 70;
+}
+.modal .modal__backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal .modal__panel {
+  pointer-events: auto;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checkbox {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+.pwd-row {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Empty state */
+.orgd-empty {
+  display: grid;
+  gap: 12px;
+  place-items: start;
+}

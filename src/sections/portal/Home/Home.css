@@ -1,0 +1,292 @@
+/* =========================================================
+   Portal Home (pt-)
+   Spacious, marketing-like layout using global tokens
+========================================================= */
+
+.pt-home {
+  display: grid;
+  gap: 28px;
+}
+
+/* ================= HERO ================= */
+
+.pt-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  padding: 32px;
+  background: radial-gradient(
+      60rem 18rem at 10% -10%,
+      color-mix(in oklab, var(--brand), transparent 85%),
+      transparent
+    ),
+    var(--surface-1);
+  overflow: hidden;
+}
+
+@media (max-width: 980px) {
+  .pt-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pt-hero__title {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.1;
+}
+.pt-hero__sub {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+}
+
+.pt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.pt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+.pt-btn:hover {
+  background: var(--surface-3);
+}
+.pt-btn--primary {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: color-mix(in oklab, var(--brand), black 12%);
+}
+.pt-btn--primary:hover {
+  filter: brightness(1.05);
+}
+
+/* small chips under actions */
+.pt-hero__badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.pt-chip {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--brand), transparent 88%);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+/* right-side hero cards */
+.pt-hero__art {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.pt-hero__card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+}
+.pt-hero__cardTitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.pt-hero__metric {
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.pt-hero__spark {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ================= CATEGORIES ================= */
+
+.pt-sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pt-link {
+  text-decoration: none;
+  color: color-mix(in oklab, var(--brand), var(--text) 24%);
+}
+.pt-link:hover {
+  color: var(--brand);
+}
+
+.pt-cats__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 980px) {
+  .pt-cats__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .pt-cats__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pt-cat {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--transition-fast),
+    background var(--transition-fast), border-color var(--transition-fast);
+}
+.pt-cat:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--surface-1), white 4%);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 65%);
+}
+.pt-cat__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--brand), transparent 88%);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 55%);
+}
+.pt-cat__icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--brand);
+}
+.pt-cat__label {
+  font-weight: 600;
+}
+
+/* ================= HOW IT WORKS ================= */
+
+.pt-steps {
+  padding: 18px;
+}
+.pt-steps__row {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 980px) {
+  .pt-steps__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pt-step {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-1);
+  padding: 16px;
+}
+.pt-step__num {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  background: var(--brand);
+  color: var(--on-brand);
+  margin-bottom: 8px;
+}
+.pt-step h4 {
+  margin: 0 0 6px;
+}
+.pt-step p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ================= RECENTS ================= */
+
+.pt-recent {
+  padding: 18px;
+}
+.pt-recent__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pt-recent__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.pt-recent__item {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content max-content;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+}
+.pt-recent__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pt-recent__age {
+  color: var(--text-muted);
+}
+.pt-recent__chev {
+  opacity: 0.6;
+}
+
+.pt-pill {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  margin-right: 4px;
+}
+.pt-pill--open {
+  background: color-mix(in oklab, orange, transparent 82%);
+  border-color: color-mix(in oklab, orange, var(--border) 60%);
+}
+.pt-pill--pending {
+  background: color-mix(in oklab, gold, transparent 84%);
+  border-color: color-mix(in oklab, gold, var(--border) 60%);
+}
+.pt-pill--solved {
+  background: color-mix(in oklab, var(--brand), transparent 84%);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 60%);
+}

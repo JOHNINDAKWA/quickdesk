@@ -1,0 +1,283 @@
+/* -----------------------------
+   Global reset + base
+--------------------------------*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue",
+    Inter, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    sans-serif;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* a11y focus */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Layout helpers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+}
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Buttons (simple, tweak later) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--surface-3);
+}
+.btn-primary {
+  background: var(--brand);
+  border-color: color-mix(in oklab, var(--brand), black 10%);
+  color: var(--on-brand);
+}
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--brand), white 8%);
+  color: var(--text);
+}
+
+/* -----------------------------
+   Tokens (sizes, radii, motion)
+--------------------------------*/
+:root {
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.1), 0 16px 40px rgba(0, 0, 0, 0.12);
+
+  --transition-fast: 120ms;
+  --transition-med: 200ms;
+}
+
+/* -----------------------------
+   Color system (semantic)
+   - Default: LIGHT
+   - Brand is HSL so we can derive tints/shades.
+--------------------------------*/
+:root {
+  color-scheme: light;
+
+  /* Deep teal brand (from your image vibe) */
+  --brand-h: 170; /* hue */
+  --brand-s: 45%; /* saturation */
+  --brand-l: 38%; /* lightness */
+
+  /* Derivatives */
+  --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
+  --brand-weak: hsl(
+    var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 18%)
+  );
+  --brand-strong: hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l) - 8%));
+  --on-brand: #ffffff;
+
+  /* Neutrals (light) */
+  --bg: #f8faf9;
+  --surface-1: #ffffff;
+  --surface-2: #f3f5f4;
+  --surface-3: #ecefee;
+  --border: #e3e7e6;
+  --text: #0e1413;
+  --text-muted: #667a75;
+
+  /* Sidebar gradient (teal glow like the image) */
+  --sidebar-grad: radial-gradient(
+      60rem 28rem at 10% -10%,
+      color-mix(in oklab, var(--brand), transparent 70%),
+      transparent
+    ),
+    radial-gradient(
+      46rem 20rem at 110% 0%,
+      color-mix(in oklab, var(--brand-strong), transparent 75%),
+      transparent
+    );
+}
+
+/* DARK overrides */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --brand-l: 44%; /* lift brand a bit in dark so it pops */
+  --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
+  --brand-weak: hsl(
+    var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%)
+  );
+  --brand-strong: hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l) - 6%));
+  --on-brand: #0a1110;
+
+  --bg: #0a1211;
+  --surface-1: #0f1917;
+  --surface-2: #0c1514;
+  --surface-3: #0a1211;
+  --border: #162420;
+  --text: #eaf4f1;
+  --text-muted: #a5b7b2;
+
+  --sidebar-grad: radial-gradient(
+      80rem 36rem at 10% -10%,
+      color-mix(in oklab, var(--brand), transparent 70%),
+      transparent
+    ),
+    radial-gradient(
+      60rem 24rem at 110% 10%,
+      color-mix(in oklab, var(--brand-strong), transparent 78%),
+      transparent
+    );
+}
+
+/* Respect system preference, unless you explicitly set data-theme */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    /* apply the same overrides as [data-theme="dark"] */
+    color-scheme: dark;
+
+    --brand-l: 44%;
+    --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
+    --brand-weak: hsl(
+      var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%)
+    );
+    --brand-strong: hsl(
+      var(--brand-h) var(--brand-s) calc(var(--brand-l) - 6%)
+    );
+    --on-brand: #0a1110;
+
+    --bg: #0a1211;
+    --surface-1: #0f1917;
+    --surface-2: #0c1514;
+    --surface-3: #0a1211;
+    --border: #162420;
+    --text: #eaf4f1;
+    --text-muted: #a5b7b2;
+
+    --sidebar-grad: radial-gradient(
+        80rem 36rem at 10% -10%,
+        color-mix(in oklab, var(--brand), transparent 70%),
+        transparent
+      ),
+      radial-gradient(
+        60rem 24rem at 110% 10%,
+        color-mix(in oklab, var(--brand-strong), transparent 78%),
+        transparent
+      );
+  }
+}
+
+/* -----------------------------
+   Per-section brand overrides
+   (use on your layout root div)
+   <div data-app="superadmin">...</div>
+--------------------------------*/
+[data-app="superadmin"] {
+  /* warm orange for SA */
+  --brand-h: 23;
+  --brand-s: 95%;
+  --brand-l: 55%;
+}
+[data-app="helpdesk"] {
+  /* indigo for agents */
+  --brand-h: 258;
+  --brand-s: 88%;
+  --brand-l: 62%;
+}
+[data-app="portal"] {
+  /* emerald for requesters */
+  --brand-h: 160;
+  --brand-s: 70%;
+  --brand-l: 45%;
+}
+[data-app="marketing"] {
+  /* keep close to the deep teal hero */
+  --brand-h: 170;
+  --brand-s: 55%;
+  --brand-l: 44%;
+}
+
+/* -----------------------------
+   Ready-to-use building blocks
+--------------------------------*/
+.header {
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar-grad);
+}
+.sidebar {
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+}
+.sidebar--tealGlow {
+  /* for the dark teal look from your image */
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--brand-strong), transparent 84%),
+      transparent
+    ),
+    var(--surface-2);
+  box-shadow: var(--shadow-1);
+}
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--brand-weak);
+  color: var(--on-brand);
+}
+
+/* Links */
+a {
+  color: color-mix(in oklab, var(--brand), var(--text) 25%);
+}
+a:hover {
+  color: var(--brand);
+}
+
+/* Smooth theme transitions */
+html {
+  transition: background-color var(--transition-med) ease,
+    color var(--transition-med) ease;
+}
+body,
+.panel,
+.sidebar,
+.header,
+.btn,
+.btn-primary {
+  transition: background-color var(--transition-med) ease,
+    border-color var(--transition-med) ease, color var(--transition-med) ease;
+}

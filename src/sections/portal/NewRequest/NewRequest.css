@@ -1,0 +1,241 @@
+/* =========================================================
+   New Request (pt-*) — Spacious, polished layout
+   Works with your existing tokens (surface/border/text/brand)
+   and classNamePrefix="ptselect" for react-select.
+========================================================= */
+
+/* Page rhythm */
+.pt-new {
+  display: grid;
+  gap: var(--space-6, 32px);
+}
+.pt-new__head h2 {
+  margin: 0 0 4px;
+  font-size: clamp(22px, 2.2vw, 28px);
+}
+.pt-new__head p { margin: 0; color: var(--text-muted); }
+
+/* ===================== Layout ===================== */
+.pt-ticket {
+  display: grid;
+  gap: var(--space-6, 32px);
+  grid-template-columns: 1.4fr 0.8fr; /* give the form more width */
+}
+@media (max-width: 1080px) { .pt-ticket { grid-template-columns: 1fr; } }
+
+/* Left column as panel */
+.pt-ticket__form {
+  display: grid;
+  gap: var(--space-4, 20px);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl, 18px);
+  padding: var(--space-6, 32px);
+}
+
+/* Right column: sticky summary/tips */
+.pt-ticket__aside {
+  display: grid;
+  gap: var(--space-4, 20px);
+  align-self: start;
+  position: sticky;
+  top: 96px; /* keeps under header while scrolling */
+}
+@media (max-width: 1080px) { .pt-ticket__aside { position: static; } }
+
+/* ===================== Fields ===================== */
+.pt-field { display: grid; gap: 8px; }
+.pt-label { font-size: 12px; color: var(--text-muted); letter-spacing: .02em; }
+
+.pt-field input[type="text"],
+.pt-field input[type="file"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.pt-field input[type="text"]::placeholder {
+  color: color-mix(in oklab, var(--text-muted), transparent 10%);
+}
+.pt-field input[type="text"]:focus,
+.pt-field :where(.ptselect__control--is-focused) {
+  border-color: color-mix(in oklab, var(--brand), var(--border) 38%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand), transparent 86%);
+}
+
+/* Two-up rows */
+.pt-grid-2 { display: grid; gap: var(--space-4, 20px); grid-template-columns: 1fr 1fr; }
+@media (max-width: 640px) { .pt-grid-2 { grid-template-columns: 1fr; } }
+
+/* Validation helpers (optional) */
+.pt-field.error input,
+.pt-field.error .ptselect__control,
+.pt-field.error .ql-container.ql-snow {
+  border-color: color-mix(in oklab, red, var(--border) 30%);
+}
+.pt-hint { font-size: 12px; color: color-mix(in oklab, red, black 15%); }
+
+/* ===================== react-select ===================== */
+.ptselect__control {
+  background: var(--surface-1) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  min-height: 44px !important;
+  box-shadow: none !important;
+  transition: border-color 160ms ease !important;
+}
+.ptselect__value-container { padding: 4px 12px !important; }
+.ptselect__single-value { color: var(--text) !important; }
+.ptselect__placeholder { color: var(--text-muted) !important; }
+.ptselect__indicator { color: var(--text-muted) !important; }
+.ptselect__indicator-separator { background: var(--border) !important; }
+.ptselect__menu {
+  z-index: 40; /* above quill toolbar */
+  background: var(--surface-1) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-2) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+.ptselect__option { background: transparent !important; color: var(--text) !important; }
+.ptselect__option--is-focused { background: var(--surface-2) !important; }
+.ptselect__option--is-selected {
+  background: color-mix(in oklab, var(--brand), transparent 85%) !important;
+}
+
+/* ===================== Quill ===================== */
+.pt-quillhost .ql-toolbar.ql-snow {
+  border: 1px solid var(--border);
+  border-radius: 14px 14px 0 0;
+  background: var(--surface-2);
+  padding: 6px;
+}
+.pt-quillhost .ql-container.ql-snow {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  background: var(--surface-1);
+  color: var(--text);
+  min-height: 220px; /* taller editor */
+}
+.pt-quillhost .ql-editor {
+  line-height: 1.55;
+  padding: 14px;
+}
+.pt-quillhost .ql-editor.ql-blank::before {
+  color: var(--text-muted);
+  opacity: .9;
+}
+
+/* Make toolbar icons visible in dark theme */
+.pt-quillhost .ql-picker,
+.pt-quillhost .ql-stroke { color: var(--text); stroke: var(--text); }
+.pt-quillhost .ql-fill { fill: var(--text); }
+.pt-quillhost .ql-toolbar button:hover { background: color-mix(in oklab, var(--surface-2), white 4%); }
+
+/* ===================== Files ===================== */
+.pt-field input[type="file"] {
+  padding: 10px 12px;
+  background: var(--surface-1);
+}
+.pt-field input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.pt-field input[type="file"]::file-selector-button:hover {
+  background: var(--surface-3);
+}
+
+.pt-files {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.pt-file {
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+}
+
+/* Checkbox row */
+.pt-check {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+.pt-check input[type="checkbox"] { width: 16px; height: 16px; }
+
+/* ===================== Actions / Toast ===================== */
+.pt-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+.pt-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer; text-decoration: none;
+  transition: filter 140ms ease, background 140ms ease;
+}
+.pt-btn:hover { background: var(--surface-3); }
+.pt-btn--primary {
+  background: var(--brand);
+  border-color: color-mix(in oklab, var(--brand), black 10%);
+  color: var(--on-brand);
+}
+.pt-btn[disabled] { opacity: .6; cursor: not-allowed; }
+
+.pt-toast {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: color-mix(in oklab, var(--brand), transparent 85%);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 60%);
+  border-radius: 14px;
+}
+
+/* ===================== Right-side cards ===================== */
+.pt-summary,
+.pt-help {
+  display: grid;
+  gap: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl, 18px);
+  padding: var(--space-5, 24px);
+}
+.pt-summary h4,
+.pt-help h4 { margin: 0; }
+
+.pt-summary__row {
+  display: flex; justify-content: space-between; gap: 10px;
+}
+.pt-summary__row span { color: var(--text-muted); }
+.pt-summary__desc span { color: var(--text-muted); }
+.pt-summary__desc p { margin: 6px 0 0; line-height: 1.5; }
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .pt-field input[type="text"],
+  .ptselect__control,
+  .ptselect__menu,
+  .pt-btn { transition: none !important; }
+}

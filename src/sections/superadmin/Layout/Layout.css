@@ -1,0 +1,412 @@
+/* ========== Grid shell ========== */
+.sa-app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas:
+    "sidebar topbar"
+    "sidebar main";
+  background: var(--bg);
+  color: var(--text);
+}
+.sa-app.is-collapsed {
+  grid-template-columns: 84px 1fr;
+}
+
+/* ========== Sidebar (desktop column; drawer on mobile) ========== */
+.sa-sidebar {
+  grid-area: sidebar;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--brand-strong), transparent 84%),
+      transparent
+    ),
+    var(--surface-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  /* overflow-y: auto; */
+  z-index: 50; /* above backdrop */
+}
+
+.sa-sidebar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+/* Drawer close button (mobile only) */
+.sa-drawer-close {
+  display: none !important;
+}
+
+/* Floating expand button: shows only when collapsed (desktop) */
+.sa-expand {
+  position: absolute;
+  top: 50%;
+  right: -14px;                 /* sit just outside the rail */
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: none;                /* default hidden */
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+  z-index: 60;                  /* above content edge */
+  transition: background var(--transition-fast),
+              color var(--transition-fast),
+              border-color var(--transition-fast),
+              transform var(--transition-fast);
+}
+.sa-expand svg { width: 16px; height: 16px; }
+.sa-expand:hover { background: color-mix(in oklab, var(--surface-1), white 8%); color: var(--brand); }
+.sa-expand:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Only show the expand button when collapsed (desktop) */
+.sa-app.is-collapsed .sa-expand { display: grid; }
+
+/* Never show the expand FAB on mobile (drawer handles it) */
+@media (max-width: 940px) {
+  .sa-expand { display: none !important; }
+}
+
+
+/* ---- Logo (always a circle) ---- */
+.sa-logo,
+.sa-avatar,
+.sa-iconbtn {
+  aspect-ratio: 1 / 1;
+}
+
+.sa-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+  user-select: none;
+}
+.sa-logo svg {
+  width: 22px;
+  height: 22px;
+}
+.sa-logo:hover {
+  filter: brightness(1.04);
+}
+
+/* ---- Icon buttons (collapse / theme / etc.) ---- */
+.sa-iconbtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    border-color var(--transition-fast), transform var(--transition-fast),
+    color var(--transition-fast);
+}
+.sa-iconbtn svg {
+  width: 18px;
+  height: 18px;
+}
+.sa-iconbtn:hover {
+  background: color-mix(in oklab, var(--surface-3), white 4%);
+  color: var(--brand);
+}
+
+.sa-collapse .chev {
+  transition: transform var(--transition-fast);
+}
+.sa-collapse .chev.rot {
+  transform: rotate(180deg);
+}
+
+/* hide collapse button when collapsed (logo is used to expand) */
+.sa-app.is-collapsed .sa-collapse {
+  display: none;
+}
+
+/* ========== Nav ========== */
+.sa-nav {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sa-nav__section {
+  margin: 12px 8px 4px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sa-nav__item {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background var(--transition-fast),
+    border-color var(--transition-fast), color var(--transition-fast);
+}
+.sa-nav__item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.sa-nav__item:hover {
+  background: color-mix(in oklab, var(--surface-2), white 4%);
+}
+.sa-nav__item.is-active {
+  background: color-mix(in oklab, var(--brand), transparent 88%);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+.sa-nav__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--transition-fast), transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+.sa-nav__icon svg {
+  width: 18px;
+  height: 18px;
+}
+.sa-nav__item:hover .sa-nav__icon {
+  color: var(--brand-strong);
+  transform: translateX(1px);
+}
+.sa-nav__item.is-active .sa-nav__icon {
+  color: var(--brand);
+}
+
+.sa-nav__label {
+  white-space: nowrap;
+}
+
+/* Collapsed (desktop): compact items, no headers, center icons */
+.sa-app.is-collapsed .sa-nav__label {
+  display: none;
+}
+.sa-app.is-collapsed .sa-nav__item {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding: 10px;
+}
+.sa-app.is-collapsed .sa-nav__icon svg {
+  width: 20px;
+  height: 20px;
+}
+.sa-app.is-collapsed .sa-nav__section {
+  display: none;
+}
+
+/* ========== Sidebar bottom controls ========== */
+.sa-sidebar__bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Avatar (circle) */
+.sa-avatar {
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+  background: var(--brand-weak);
+  color: var(--on-brand);
+}
+
+/* When collapsed: only show theme toggle at the bottom */
+.sa-app.is-collapsed .sa-avatar {
+  display: none;
+}
+.sa-app.is-collapsed .sa-sidebar__bottom {
+  justify-content: center;
+}
+
+/* ========== Backdrop for mobile drawer ========== */
+.sa-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-med);
+  z-index: 40;
+}
+.sa-app.is-mobile-open .sa-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========== Topbar ========== */
+.sa-topbar {
+  grid-area: topbar;
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar-grad);
+  display: flex;
+  align-items: center;
+  z-index: 30;
+}
+.sa-topbar__inner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* left (menu+crumb) | search | actions */
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+}
+.sa-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sa-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.sa-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-strong);
+  display: inline-block;
+}
+
+/* Search */
+.sa-search {
+  display: flex;
+}
+.sa-search input {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  color: var(--text);
+}
+
+/* ========== Main content ========== */
+.sa-main {
+  grid-area: main;
+  padding: 20px 16px 28px;
+}
+@media (min-width: 1100px) {
+  .sa-main {
+    padding: 28px 24px 40px;
+  }
+}
+
+/* ========== Mobile behavior ========== */
+.sa-menu {
+  display: none;
+} /* hamburger hidden on desktop */
+
+@media (max-width: 940px) {
+  /* Convert layout to single column; sidebar becomes off-canvas drawer */
+  .sa-app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr;
+    grid-template-areas:
+      "topbar"
+      "main";
+  }
+
+  .sa-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100dvh;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform var(--transition-med) ease;
+    border-right: 1px solid var(--border);
+  }
+  .sa-app.is-mobile-open .sa-sidebar {
+    transform: translateX(0);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* Show hamburger; hide desktop collapse */
+  .sa-menu {
+    display: grid;
+  }
+  .sa-collapse {
+    display: none;
+  }
+
+  /* Show the X button inside the drawer */
+  .sa-drawer-close {
+    display: grid;
+  }
+
+  /* In drawer, show section headers even if app is collapsed */
+  .sa-app.is-mobile-open .sa-nav__section {
+    display: block;
+  }
+
+  /* In drawer, keep full item layout even if collapsed on desktop */
+  .sa-app.is-collapsed .sa-nav__label {
+    display: inline;
+  }
+  .sa-app.is-collapsed .sa-nav__item {
+    grid-template-columns: 22px 1fr;
+    justify-items: start;
+  }
+
+  /* Bottom controls in drawer: keep both theme + avatar visible */
+  .sa-app.is-mobile-open.is-collapsed .sa-avatar {
+    display: grid;
+  }
+  .sa-app.is-mobile-open.is-collapsed .sa-sidebar__bottom {
+    justify-content: space-between;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sa-iconbtn,
+  .sa-nav__icon,
+  .sa-collapse .chev,
+  .sa-sidebar,
+  .sa-backdrop {
+    transition: none !important;
+  }
+}

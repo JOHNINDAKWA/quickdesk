@@ -1,0 +1,225 @@
+/* =========================================
+   Organizations — layout & components
+   ========================================= */
+
+.org-page {
+  display: grid;
+  gap: 16px;
+}
+
+/* ---------- Header ---------- */
+.org-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-1);
+}
+.org-title { margin: 0 0 6px; font-size: 22px; }
+.org-sub   { margin: 0; color: var(--text-muted); }
+.org-actions .btn { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ---------- KPIs ---------- */
+.org-kpis {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 1100px) {
+  .org-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.org-kpi { padding: 14px; box-shadow: var(--shadow-1); }
+.org-kpi__label { font-size: 12px; color: var(--text-muted); }
+.org-kpi__value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+
+/* ---------- Filters ---------- */
+.org-filters {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.org-search {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+  color: var(--text-muted);
+}
+.org-search input {
+  border: none; outline: none; background: transparent; color: var(--text);
+}
+.org-selects { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* generic small field (used in filters) */
+.field { display: grid; gap: 6px; }
+.field > span, .field .label { font-size: 12px; color: var(--text-muted); }
+.field select, .field input[type="number"] {
+  background: var(--surface-1); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 8px 10px;
+}
+
+/* ---------- Grid (cards) ---------- */
+.org-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  align-items: stretch; /* stretch cards to equal heights per row */
+}
+@media (min-width: 800px)  { .org-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { .org-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.org-card {
+  display: flex;               /* FLEX column so actions can pin to bottom */
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow-1);
+  height: 100%;
+}
+
+/* head */
+.org-card__head {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.org-meta { min-width: 0; } /* allow truncation */
+.org-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.org-slug { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* card logo */
+.org-avatar {
+  width: 48px; height: 48px; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-1);
+}
+.org-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+}
+.org-badges {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: end;
+  min-width: max-content; /* keep from squeezing name column */
+}
+.plan--free        { background: color-mix(in oklab, var(--surface-2), white 10%); }
+.plan--standard    { background: color-mix(in oklab, var(--brand), transparent 85%); }
+.plan--premium     { background: color-mix(in oklab, var(--brand), transparent 75%); }
+.plan--enterprise  { background: color-mix(in oklab, gold, transparent 72%); }
+.status--active    { background: color-mix(in oklab, var(--brand), transparent 82%); }
+.status--suspended { background: color-mix(in oklab, orange, transparent 75%); }
+
+/* stats */
+.org-stats { display: grid; gap: 8px; }
+.org-seats { display: inline-flex; align-items: center; gap: 8px; color: var(--text); }
+.org-seats svg { width: 16px; height: 16px; color: var(--text-muted); }
+.org-progress {
+  height: 10px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.org-progress__fill {
+  height: 100%; background: var(--brand);
+  border-right: 1px solid color-mix(in oklab, var(--brand), black 10%);
+}
+
+/* actions pinned to bottom */
+.org-actions-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: auto; /* push this row to the bottom of the card */
+}
+.org-spacer { flex: 1; }
+.btn.btn-ghost       { background: var(--surface-1); border-color: var(--border); }
+.btn.btn-ghost:hover { background: color-mix(in oklab, var(--surface-1), white 6%); }
+.btn.btn-ghost.warn  { color: color-mix(in oklab, orange, black 10%); }
+.btn.btn-ghost.danger{ color: color-mix(in oklab, red, black 8%); }
+.btn.btn-icon        { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+
+/* ---------- Drawer (Create Organization) ---------- */
+.org-drawer { position: fixed; inset: 0; pointer-events: none; z-index: 80; }
+.org-drawer.is-open { pointer-events: auto; }
+.org-drawer__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,.4);
+  opacity: 0; transition: opacity var(--transition-med);
+}
+.org-drawer.is-open .org-drawer__backdrop { opacity: 1; }
+
+.org-drawer__panel {
+  position: absolute; top: 0; right: 0;
+  height: 100dvh; width: min(520px, 100%);
+  background: var(--surface-1); border-left: 1px solid var(--border);
+  transform: translateX(100%); transition: transform var(--transition-med) ease;
+  display: flex; flex-direction: column; /* KEY for sticky footer */
+  padding: 16px; z-index: 70;
+}
+.org-drawer.is-open .org-drawer__panel { transform: translateX(0); box-shadow: var(--shadow-2); }
+
+.org-drawer__head { display: flex; align-items: center; justify-content: space-between; }
+
+/* Form inside drawer: scrolls, footer sticks */
+.org-drawer__panel .org-form {
+  flex: 1; min-height: 0; overflow: auto;
+  display: grid; gap: 12px;
+}
+
+/* Sticky footer bar for actions */
+.org-drawer__actions {
+  position: sticky; bottom: -16px; /* overlap panel padding slightly */
+  background: var(--surface-1);
+  border-top: 1px solid var(--border);
+  padding-top: 12px; margin-top: 12px;
+  display: flex; justify-content: flex-end; gap: 8px;
+  z-index: 1;
+}
+
+/* ---------- Modern form look (used in drawer) ---------- */
+.form-modern { display: grid; gap: 12px; }
+
+.grid-2 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+.grid-3 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 720px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .org-meta .org-name { font-weight: 600; }
+  .org-meta .org-slug { font-size: 12px; }
+}
+
+.field .label { font-size: 12px; color: var(--text-muted); }
+.field.error .input { border-color: color-mix(in oklab, red, var(--border) 30%); }
+.field .hint  { font-size: 12px; color: color-mix(in oklab, red, black 10%); }
+
+.input {
+  display: grid; grid-auto-flow: column; grid-auto-columns: max-content 1fr max-content;
+  align-items: center; gap: 8px;
+  background: var(--surface-1); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px 10px;
+}
+.input:focus-within { border-color: color-mix(in oklab, var(--brand), var(--border) 40%); }
+.input input, .input select {
+  border: none; outline: none; background: transparent; color: var(--text);
+  width: 100%; min-width: 0;
+}
+.input__icon, .input__prefix { color: var(--text-muted); }
+.input__prefix { font-weight: 600; }
+
+.swatch { width: 20px; height: 20px; border-radius: 6px; border: 1px solid var(--border); }
+.logo-mini { width: 24px; height: 24px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-1); }
+.logo-mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.note {
+  color: var(--text-muted); background: var(--surface-2);
+  border-radius: var(--radius-lg); padding: 10px; border: 1px dashed var(--border);
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 720px) {
+  .org-hero    { grid-template-columns: 1fr; }
+  .org-filters { grid-template-columns: 1fr; }
+  .org-selects { justify-content: space-between; }
+}

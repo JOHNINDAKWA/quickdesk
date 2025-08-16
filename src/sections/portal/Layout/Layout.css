@@ -1,0 +1,225 @@
+/* =========================================================
+   QuickDesk Portal Layout (pt-*)
+   - Inherits colors from global tokens + [data-app="portal"]
+   - Wide, airy spacing; responsive drawer
+========================================================= */
+
+/* Root layout wrapper */
+.app-portal {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  /* layout-only tokens (safe to set locally) */
+  --content-max: 1200px;
+  --gap-1: 8px;
+  --gap-2: 12px;
+  --gap-3: 16px;
+  --gap-4: 20px;
+  --gap-5: 24px;
+  --gap-6: 32px;
+  --gap-7: 40px;
+}
+
+@media (min-width: 1440px) {
+  .app-portal { --content-max: 1360px; }
+}
+
+/* Container */
+.pt-container {
+  width: min(var(--content-max), 100%);
+  margin: 0 auto;
+  padding: 0 var(--gap-5);
+}
+
+/* ===================== Header ===================== */
+
+.pt-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar-grad);
+}
+
+.pt-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* left | center nav | right tools */
+  align-items: center;
+  gap: var(--gap-5);
+  padding: var(--gap-7) 0; /* tall header */
+}
+
+/* Left cluster */
+.pt-left {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-3);
+}
+
+/* Icon button (menu/theme/close) */
+.pt-iconbtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pt-iconbtn:hover { background: var(--surface-3); }
+.pt-menu { display: none; } /* shown on mobile via MQ */
+
+/* Brand/Org chip */
+.pt-org {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-3);
+  color: var(--text);
+}
+.pt-org__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: var(--brand);
+  color: var(--on-brand);
+  border: 1px solid color-mix(in oklab, var(--brand), black 16%);
+}
+.pt-org__meta { line-height: 1.15; }
+.pt-org__name { font-weight: 800; font-size: 15px; }
+.pt-org__slug { font-size: 12px; color: var(--text-muted); }
+
+/* Center nav */
+.pt-nav {
+  display: flex;
+  gap: var(--gap-3);
+  justify-content: center;
+}
+.pt-nav a {
+  text-decoration: none;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--text);
+}
+.pt-nav a.active,
+.pt-nav a:hover {
+  background: color-mix(in oklab, var(--brand), transparent 88%);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+/* Right cluster (theme + user) */
+.pt-right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-3);
+}
+.pt-user {
+  display: inline-grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--gap-2);
+  align-items: center;
+}
+.pt-user__initials,
+.pt-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.pt-user__name { font-weight: 700; }
+.pt-user__email { font-size: 12px; color: var(--text-muted); }
+
+/* ===================== Mobile Drawer ===================== */
+
+.pt-drawer {
+  position: fixed;
+  inset: 0 auto 0 0; /* top/right/bottom/left */
+  height: 100dvh;
+  width: 320px;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform var(--transition-med) ease;
+  z-index: 60;
+
+  padding: var(--gap-5);
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+.pt-drawer__org {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--gap-3);
+  align-items: center;
+}
+.pt-drawer__nav {
+  display: grid;
+  gap: var(--gap-2);
+}
+.pt-drawer__nav a {
+  text-decoration: none;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--text);
+}
+.pt-drawer__nav a.active,
+.pt-drawer__nav a:hover {
+  background: var(--surface-2);
+}
+.pt-close { justify-self: end; }
+
+/* Drawer backdrop */
+.pt-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.44);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-med);
+  z-index: 50;
+}
+
+/* Open state (toggled by .app-portal on body of layout) */
+.app-portal.is-nav-open .pt-drawer {
+  transform: translateX(0);
+  box-shadow: var(--shadow-2);
+}
+.app-portal.is-nav-open .pt-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===================== Main ===================== */
+
+.pt-main {
+  padding: var(--gap-7) 0 var(--gap-7);
+}
+
+/* ===================== Responsive ===================== */
+
+@media (max-width: 980px) {
+  .pt-bar { gap: var(--gap-3); padding: var(--gap-6) 0; }
+}
+
+@media (max-width: 860px) {
+  .pt-menu { display: grid; }  /* show hamburger */
+  .pt-nav { display: none; }   /* hide center nav */
+  .pt-user__email { display: none; }
+}
+
+/* ===================== Reduced Motion ===================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-iconbtn,
+  .pt-drawer,
+  .pt-backdrop { transition: none !important; }
+}

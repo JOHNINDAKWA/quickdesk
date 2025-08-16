@@ -1,0 +1,148 @@
+/* ----- Page shell ----- */
+.pt-req-page { display: grid; gap: 16px; }
+
+.pt-req-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.pt-req-title { margin: 0 0 4px; }
+.pt-req-actions { display: flex; gap: 8px; }
+
+/* ----- Filters ----- */
+.pt-req-filters {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.pt-req-search input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text);
+}
+
+.pt-req-selects {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 10px;
+}
+.pt-req-field { display: grid; gap: 6px; min-width: 160px; }
+.pt-req-field > span { font-size: 12px; color: var(--text-muted); }
+.pt-req-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-1);
+  color: var(--text);
+}
+
+/* ----- Table ----- */
+.pt-req-table { display: grid; gap: 12px; }
+
+.pt-req-table__scroll {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-1);
+}
+
+.pt-req-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.pt-req-table thead th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 12px 14px;
+  position: sticky;
+  top: 0;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+.pt-req-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.pt-req-table tbody tr:hover td {
+  background: color-mix(in oklab, var(--surface-1), white 4%);
+}
+
+.pt-req-subject { max-width: 520px; }
+.pt-req-link {
+  color: var(--text);
+  text-decoration: none;
+}
+.pt-req-link:hover { color: var(--brand); }
+.pt-req-attach { color: var(--text-muted); margin-left: 6px; }
+.pt-req-rowaction { text-align: right; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+.is-sm { width: 120px; }
+.is-md { width: 220px; }
+
+/* ----- Status & Priority chips ----- */
+.pt-status,
+.pt-prio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.pt-status--open       { background: color-mix(in oklab, var(--brand), transparent 80%); }
+.pt-status--pending    { background: color-mix(in oklab, gold, transparent 82%); }
+.pt-status--in_progress{ background: color-mix(in oklab, cornflowerblue, transparent 80%); }
+.pt-status--solved     { background: color-mix(in oklab, var(--brand), transparent 72%); }
+.pt-status--closed     { background: color-mix(in oklab, gray, transparent 84%); }
+
+.pt-prio--urgent { background: color-mix(in oklab, red, transparent 78%); }
+.pt-prio--high   { background: color-mix(in oklab, orange, transparent 78%); }
+.pt-prio--normal { background: var(--surface-2); }
+.pt-prio--low    { background: color-mix(in oklab, var(--surface-2), white 10%); }
+
+/* ----- Empty state ----- */
+.pt-req-empty {
+  text-align: center;
+  padding: 40px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: var(--surface-1);
+}
+.pt-req-empty__title { font-weight: 700; margin-bottom: 6px; }
+
+/* ----- Pager ----- */
+.pt-req-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.pt-req-pageinfo { color: var(--text-muted); }
+
+/* ----- Responsive ----- */
+@media (max-width: 980px) {
+  .pt-req-filters { grid-template-columns: 1fr; }
+  .pt-req-selects { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .pt-req-selects { grid-template-columns: 1fr; }
+  .is-sm, .is-md { width: auto; }
+  .pt-req-rowaction { display: none; }
+}

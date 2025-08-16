@@ -1,0 +1,148 @@
+/* Marketing Pricing — namespace mk- */
+
+.mk-pricing {
+  margin: 0 auto;
+  padding: clamp(64px, 12vh, 120px) 0;
+}
+
+.mk-pricing__head {
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  margin-bottom: clamp(24px, 5vh, 44px);
+}
+.mk-pricing__title {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 40px);
+}
+.mk-pricing__sub {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(15px, 2vw, 18px);
+}
+
+/* Billing toggle */
+.mk-billing {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: 999px;
+  justify-self: center;
+  margin-top: 6px;
+}
+.mk-billing__btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.mk-billing__btn.is-active {
+  background: color-mix(in oklab, var(--brand), transparent 85%);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+.mk-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.mk-badge--deal {
+  background: color-mix(in oklab, var(--brand), transparent 86%);
+  color: var(--text);
+}
+
+/* Grid of tiers */
+.mk-pricing__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 1100px) { .mk-pricing__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px)  { .mk-pricing__grid { grid-template-columns: 1fr; } }
+
+.mk-tier {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--brand-strong), transparent 96%), transparent 60%),
+    var(--surface-1);
+}
+.mk-tier.is-popular {
+  outline: 2px solid color-mix(in oklab, var(--brand), var(--border) 40%);
+}
+.mk-tier__badge {
+  position: absolute;
+  top: 14px; right: 14px;
+  font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  background: color-mix(in oklab, var(--brand), transparent 84%);
+  border: 1px solid color-mix(in oklab, var(--brand), var(--border) 60%);
+}
+
+.mk-tier__head { display: grid; gap: 4px; }
+.mk-tier__name { margin: 0; font-size: 18px; font-weight: 800; }
+.mk-tier__blurb { margin: 0; color: var(--text-muted); }
+
+.mk-tier__price {
+  display: inline-flex; align-items: baseline; gap: 6px;
+}
+.mk-tier__currency { font-size: 18px; opacity: .9; }
+.mk-tier__amount { font-size: 36px; font-weight: 800; line-height: 1; }
+.mk-tier__unit { font-size: 12px; color: var(--text-muted); }
+.mk-tier__custom {
+  font-size: 22px; font-weight: 700;
+}
+
+.mk-tier__limits {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; gap: 6px; color: var(--text-muted); font-size: 13px;
+}
+.mk-tier__limits li {
+  display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px;
+}
+
+.mk-tier__features {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; gap: 8px;
+}
+.mk-tier__features li {
+  display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px;
+}
+.mk-tier__features svg { color: var(--brand); }
+
+.mk-tier__cta { margin-top: 6px; }
+.mk-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text);
+  cursor: pointer; text-decoration: none;
+}
+.mk-btn:hover { background: var(--surface-3); }
+.mk-btn--primary {
+  background: var(--brand);
+  border-color: color-mix(in oklab, var(--brand), black 10%);
+  color: var(--on-brand);
+}
+.mk-btn--primary:hover { filter: brightness(1.05); color: var(--text);}
+
+.mk-pricing__foot {
+  margin-top: 14px;
+  display: grid; gap: 6px; justify-items: center; text-align: center;
+}
+.mk-note { color: var(--text-muted); }
+.mk-faqhint a { color: color-mix(in oklab, var(--brand), var(--text) 25%); text-decoration: none; }
+.mk-faqhint a:hover { color: var(--brand); }

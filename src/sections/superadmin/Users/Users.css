@@ -1,0 +1,367 @@
+/* Unique prefix: qdus- (QuickDesk Users) */
+
+.qdus-page {
+  display: grid;
+  gap: 16px;
+}
+
+/* ========== Header ========== */
+.qdus-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  box-shadow: var(--shadow-1);
+}
+.qdus-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+.qdus-sub {
+  margin: 0;
+  color: var(--text-muted);
+}
+.qdus-hero__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ========== Bulk bar ========== */
+.qdus-bulkbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.qdus-bulkbar__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ========== Filters ========== */
+.qdus-filters {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.qdus-search {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+  color: var(--text-muted);
+}
+.qdus-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+}
+.qdus-selects {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.qdus-mini {
+  display: grid;
+  gap: 6px;
+}
+.qdus-mini > span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.qdus-mini select {
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+}
+
+/* ========== Table ========== */
+.qdus-tablewrap {
+  overflow: auto;
+}
+.qdus-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.qdus-table thead th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  z-index: 1; /* sticky header */
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.qdus-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.spu-date{
+    font-size: 12px;
+}
+.qdus-table .w-check {
+  width: 36px;
+}
+.qdus-table .w-actions {
+  width: 360px;
+}
+
+.qdus-row:hover {
+  background: color-mix(in oklab, var(--surface-2), white 4%);
+}
+
+/* user cell */
+.qdus-usercell {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-width: 240px;
+}
+.qdus-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.qdus-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.qdus-usermeta {
+  min-width: 0;
+}
+.qdus-username {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qdus-useremail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* chips & status */
+.qdus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+}
+.qdus-chip--soft {
+  background: color-mix(in oklab, var(--brand), transparent 85%);
+}
+
+.qdus-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  text-transform: capitalize;
+}
+.qdus-status--active {
+  background: color-mix(in oklab, var(--brand), transparent 82%);
+}
+.qdus-status--invited {
+  background: color-mix(in oklab, cornflowerblue, transparent 76%);
+}
+.qdus-status--suspended {
+  background: color-mix(in oklab, orange, transparent 75%);
+}
+
+/* row actions */
+.qdus-rowactions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.btn.btn-ghost {
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+.btn.btn-ghost:hover {
+  background: color-mix(in oklab, var(--surface-1), white 6%);
+}
+.btn.btn-ghost.warn {
+  color: color-mix(in oklab, orange, black 10%);
+}
+.btn.btn-ghost.danger {
+  color: color-mix(in oklab, red, black 8%);
+}
+.btn.btn-icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* empty */
+.qdus-empty {
+  text-align: center;
+  padding: 32px 12px;
+  color: var(--text-muted);
+}
+
+/* ========== Modal (unique classes) ========== */
+.qdus-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+
+}
+.qdus-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  pointer-events: auto;
+}
+.qdus-modal__panel {
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: min(680px, 94%);
+  max-height: 88dvh;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 70;
+}
+.qdus-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.qdus-modal__actions {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-1);
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+}
+.qdus-form {
+  padding: 14px 16px;
+  display: grid;
+  gap: 12px;
+  overflow: auto;
+}
+.qdus-grid-2 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+.qdus-grid-3 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 720px) {
+  .qdus-grid-2,
+  .qdus-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* form fields (unique classes) */
+.qdus-field {
+  display: grid;
+  gap: 6px;
+}
+.qdus-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.qdus-input {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+}
+.qdus-input:focus-within {
+  border-color: color-mix(in oklab, var(--brand), var(--border) 40%);
+}
+.qdus-input input,
+.qdus-input select {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  width: 100%;
+  min-width: 0;
+}
+.qdus-hint {
+  font-size: 12px;
+  color: color-mix(in oklab, red, black 10%);
+}
+.qdus-field.is-error .qdus-input {
+  border-color: color-mix(in oklab, red, var(--border) 30%);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .qdus-table .w-actions {
+    width: 280px;
+  }
+}
+@media (max-width: 720px) {
+  .qdus-hero {
+    grid-template-columns: 1fr;
+  }
+  .qdus-filters {
+    grid-template-columns: 1fr;
+  }
+  .qdus-hero__actions {
+    justify-content: flex-start;
+  }
+}
