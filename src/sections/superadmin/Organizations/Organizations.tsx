@@ -2,12 +2,9 @@ import { useMemo, useState } from "react";
 import {
   FiPlus,
   FiSearch,
-  FiMoreVertical,
-  FiEdit2,
   FiExternalLink,
   FiPauseCircle,
   FiPlayCircle,
-  FiTrash2,
   FiUsers,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";

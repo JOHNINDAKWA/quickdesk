@@ -139,7 +139,7 @@ export default function SAAnalytics() {
   const prevSeries = useMemo(() => {
     if (!compare) return null;
     const prevLabels = daysBack(days).map((d) => d); // just stubbing
-    return prevLabels.map((date, i) => ({
+    return prevLabels.map((date) => ({
       date,
       created: clamp(rand(40, 120), 5, 600),
       resolved: clamp(rand(35, 115), 5, 600),
