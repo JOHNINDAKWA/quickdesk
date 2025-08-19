@@ -23,6 +23,18 @@ body {
   color: var(--text);
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* a11y focus */
 :where(a, button, [role="button"], input, select, textarea):focus-visible {
   outline: 2px solid var(--brand);
@@ -96,29 +108,25 @@ body {
 :root {
   color-scheme: light;
 
-  /* Deep teal brand (from your image vibe) */
-  --brand-h: 170; /* hue */
-  --brand-s: 45%; /* saturation */
-  --brand-l: 38%; /* lightness */
-
-  /* Derivatives */
+  /* Brand */
+  --brand-h: 170;
+  --brand-s: 45%;
+  --brand-l: 38%;
   --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
-  --brand-weak: hsl(
-    var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 18%)
-  );
+  --brand-weak: hsl(var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 18%));
   --brand-strong: hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l) - 8%));
   --on-brand: #ffffff;
 
   /* Neutrals (light) */
-  --bg: #f8faf9;
+  --bg: #f6f7f8;
   --surface-1: #ffffff;
-  --surface-2: #f3f5f4;
-  --surface-3: #ecefee;
-  --border: #e3e7e6;
-  --text: #0e1413;
-  --text-muted: #667a75;
+  --surface-2: #f3f4f6;
+  --surface-3: #e5e7eb;
+  --border: #d1d5db;
+  --text: #111827;
+  --text-muted: #6b7280;
 
-  /* Sidebar gradient (teal glow like the image) */
+  /* Sidebar gradient */
   --sidebar-grad: radial-gradient(
       60rem 28rem at 10% -10%,
       color-mix(in oklab, var(--brand), transparent 70%),
@@ -129,17 +137,31 @@ body {
       color-mix(in oklab, var(--brand-strong), transparent 75%),
       transparent
     );
+
+  /* ===========================
+     TONE PALETTE (LIGHT MODE)
+     =========================== */
+  /* Brand-tinted (for "open") */
+  --tone-brand-bg: color-mix(in oklab, var(--brand), white 82%);
+  --tone-brand-fg: color-mix(in oklab, var(--brand), black 20%);
+  --tone-brand-border: color-mix(in oklab, var(--brand), white 62%);
+
+  /* Semantic tones */
+  --tone-green-bg:  #ecfdf5; --tone-green-fg:  #065f46; --tone-green-border:  #a7f3d0;
+  --tone-amber-bg:  #fffbeb; --tone-amber-fg:  #92400e; --tone-amber-border:  #fde68a;
+  --tone-blue-bg:   #eff6ff; --tone-blue-fg:   #1d4ed8; --tone-blue-border:   #bfdbfe;
+  --tone-violet-bg: #f5f3ff; --tone-violet-fg: #6d28d9; --tone-violet-border: #ddd6fe;
+  --tone-gray-bg:   #f3f4f6; --tone-gray-fg:   #374151; --tone-gray-border:   #e5e7eb;
+  --tone-red-bg:    #fef2f2; --tone-red-fg:    #991b1b; --tone-red-border:    #fecaca;
 }
 
-/* DARK overrides */
+/* DARK overrides (explicit theme toggle) */
 html[data-theme="dark"] {
   color-scheme: dark;
 
-  --brand-l: 44%; /* lift brand a bit in dark so it pops */
+  --brand-l: 44%;
   --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
-  --brand-weak: hsl(
-    var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%)
-  );
+  --brand-weak: hsl(var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%));
   --brand-strong: hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l) - 6%));
   --on-brand: #0a1110;
 
@@ -161,22 +183,55 @@ html[data-theme="dark"] {
       color-mix(in oklab, var(--brand-strong), transparent 78%),
       transparent
     );
+
+  /* ===========================
+     TONE PALETTE (DARK MODE)
+     Subtle tinted chips with readable text
+     =========================== */
+  --tone-brand-bg:   color-mix(in oklab, var(--brand), var(--surface-2) 84%);
+  --tone-brand-fg:   color-mix(in oklab, var(--brand), white 16%);
+  --tone-brand-border: color-mix(in oklab, var(--brand), var(--surface-3) 58%);
+
+  /* base swatches used for mixing */
+  --c-green: #10b981;
+  --c-amber: #f59e0b;
+  --c-blue:  #3b82f6;
+  --c-violet:#8b5cf6;
+  --c-red:   #ef4444;
+
+  --tone-green-bg:   color-mix(in oklab, var(--c-green),  var(--surface-2) 86%);
+  --tone-green-fg:   color-mix(in oklab, var(--c-green),  white 18%);
+  --tone-green-border: color-mix(in oklab, var(--c-green),  var(--surface-3) 58%);
+
+  --tone-amber-bg:   color-mix(in oklab, var(--c-amber), var(--surface-2) 88%);
+  --tone-amber-fg:   color-mix(in oklab, var(--c-amber), white 20%);
+  --tone-amber-border: color-mix(in oklab, var(--c-amber), var(--surface-3) 58%);
+
+  --tone-blue-bg:    color-mix(in oklab, var(--c-blue),  var(--surface-2) 88%);
+  --tone-blue-fg:    color-mix(in oklab, var(--c-blue),  white 22%);
+  --tone-blue-border:  color-mix(in oklab, var(--c-blue),  var(--surface-3) 58%);
+
+  --tone-violet-bg:  color-mix(in oklab, var(--c-violet),var(--surface-2) 88%);
+  --tone-violet-fg:  color-mix(in oklab, var(--c-violet),white 20%);
+  --tone-violet-border: color-mix(in oklab, var(--c-violet),var(--surface-3) 58%);
+
+  --tone-gray-bg:    color-mix(in oklab, var(--surface-2), white 6%);
+  --tone-gray-fg:    color-mix(in oklab, var(--text), white 12%);
+  --tone-gray-border:  color-mix(in oklab, var(--border), white 10%);
+  --tone-red-bg:     color-mix(in oklab, var(--c-red),   var(--surface-2) 88%);
+  --tone-red-fg:     color-mix(in oklab, var(--c-red),   white 20%);
+  --tone-red-border:   color-mix(in oklab, var(--c-red),   var(--surface-3) 58%);
 }
 
-/* Respect system preference, unless you explicitly set data-theme */
+/* Respect system preference unless data-theme is set */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme]) {
-    /* apply the same overrides as [data-theme="dark"] */
     color-scheme: dark;
 
     --brand-l: 44%;
     --brand: hsl(var(--brand-h) var(--brand-s) var(--brand-l));
-    --brand-weak: hsl(
-      var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%)
-    );
-    --brand-strong: hsl(
-      var(--brand-h) var(--brand-s) calc(var(--brand-l) - 6%)
-    );
+    --brand-weak: hsl(var(--brand-h) calc(var(--brand-s) - 10%) calc(var(--brand-l) + 10%));
+    --brand-strong: hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l) - 6%));
     --on-brand: #0a1110;
 
     --bg: #0a1211;
@@ -197,6 +252,36 @@ html[data-theme="dark"] {
         color-mix(in oklab, var(--brand-strong), transparent 78%),
         transparent
       );
+
+    /* same dark palette as explicit theme */
+    --tone-brand-bg:   color-mix(in oklab, var(--brand), var(--surface-2) 84%);
+    --tone-brand-fg:   color-mix(in oklab, var(--brand), white 16%);
+    --tone-brand-border: color-mix(in oklab, var(--brand), var(--surface-3) 58%);
+
+    --c-green: #10b981; --c-amber: #f59e0b; --c-blue: #3b82f6; --c-violet: #8b5cf6; --c-red: #ef4444;
+
+    --tone-green-bg:   color-mix(in oklab, var(--c-green),  var(--surface-2) 86%);
+    --tone-green-fg:   color-mix(in oklab, var(--c-green),  white 18%);
+    --tone-green-border: color-mix(in oklab, var(--c-green),  var(--surface-3) 58%);
+
+    --tone-amber-bg:   color-mix(in oklab, var(--c-amber), var(--surface-2) 88%);
+    --tone-amber-fg:   color-mix(in oklab, var(--c-amber), white 20%);
+    --tone-amber-border: color-mix(in oklab, var(--c-amber), var(--surface-3) 58%);
+
+    --tone-blue-bg:    color-mix(in oklab, var(--c-blue),  var(--surface-2) 88%);
+    --tone-blue-fg:    color-mix(in oklab, var(--c-blue),  white 22%);
+    --tone-blue-border:  color-mix(in oklab, var(--c-blue),  var(--surface-3) 58%);
+
+    --tone-violet-bg:  color-mix(in oklab, var(--c-violet),var(--surface-2) 88%);
+    --tone-violet-fg:  color-mix(in oklab, var(--c-violet),white 20%);
+    --tone-violet-border: color-mix(in oklab, var(--c-violet),var(--surface-3) 58%);
+
+    --tone-gray-bg:    color-mix(in oklab, var(--surface-2), white 6%);
+    --tone-gray-fg:    color-mix(in oklab, var(--text), white 12%);
+    --tone-gray-border:  color-mix(in oklab, var(--border), white 10%);
+    --tone-red-bg:     color-mix(in oklab, var(--c-red),   var(--surface-2) 88%);
+    --tone-red-fg:     color-mix(in oklab, var(--c-red),   white 20%);
+    --tone-red-border:   color-mix(in oklab, var(--c-red),   var(--surface-3) 58%);
   }
 }
 

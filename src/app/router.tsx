@@ -19,7 +19,8 @@ import SAAnalytics from "../sections/superadmin/Analytics/Analytics";
 /* ---------------- Agent Console (org-scoped; was “desk”) ---------------- */
 import HelpdeskLayout from "../sections/helpdesk/Layout/Layout";
 import HKDashboard from "../sections/helpdesk/Dashboard/Dashboard";
-import Tickets from "../sections/helpdesk/Tickets/Tickets";
+import MyTickets from "../sections/helpdesk/Tickets/MyTickets/MyTickets";
+import TicketDetails from "../sections/helpdesk/Tickets/MyTickets/TicketDetails/TicketDetails";
 
 /* ---------------- Customer Portal (org-scoped) ---------------- */
 import PortalLayout from "../sections/portal/Layout/Layout";
@@ -110,7 +111,9 @@ export const router = createBrowserRouter([
         element: <HelpdeskLayout />,
         children: [
           { index: true, element: <HKDashboard /> },
-          { path: "tickets", element: <Tickets /> },
+          { path: "tickets", element: <MyTickets /> },
+          { path: "tickets/:id", element: <TicketDetails /> }, 
+
         ],
       },
       {

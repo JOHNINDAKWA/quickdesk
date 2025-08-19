@@ -1,26 +1,53 @@
-import { NavLink, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState, ReactNode } from "react";
 import { useOrg } from "../../../app/org";
 
 import {
-  FiMenu, FiX, FiSun, FiMoon, FiSearch, FiChevronDown, FiBell,
-  FiHome, FiInbox, FiUserCheck, FiList, FiMessageSquare,
-  FiClock, FiArchive, FiAlertTriangle, FiBookOpen, FiDatabase,
-  FiBarChart2, FiUsers, FiSettings, FiSliders
+  FiMenu,
+  FiX,
+  FiSun,
+  FiMoon,
+  FiSearch,
+  FiChevronDown,
+  FiBell,
+  FiHome,
+  FiInbox,
+  FiUserCheck,
+  FiList,
+  FiMessageSquare,
+  FiClock,
+  FiArchive,
+  FiAlertTriangle,
+  FiBookOpen,
+  FiDatabase,
+  FiBarChart2,
+  FiUsers,
+  FiSettings,
+  FiSliders,
 } from "react-icons/fi";
 
 import "./Layout.css";
 
-// Layout.tsx
-import type { ReactNode } from 'react';
-
-type NavItem = { to: string; label: string; icon: ReactNode; exact?: boolean };
-
+/* ---------------- Types ---------------- */
+type NavItem = {
+  to: string | { pathname: string; search?: string };
+  label: string;
+  icon: ReactNode;
+  exact?: boolean;
+  /** Quick-view key for /tickets links. '' means “no view param”. */
+  viewKey?: string;
+};
 
 type NavSection = { label: string; items: NavItem[] };
 
+/* Build /tickets URLs consistently */
+const T = (view?: string): { pathname: string; search?: string } =>
+  view ? { pathname: "tickets", search: `?view=${view}` } : { pathname: "tickets" };
+
 export default function HelpdeskLayout() {
   const org = useOrg();
+  const location = useLocation();
+
   const [navOpen, setNavOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
@@ -28,7 +55,8 @@ export default function HelpdeskLayout() {
   useEffect(() => {
     const saved = (localStorage.getItem("qd_theme") as "light" | "dark") || null;
     const initial =
-      saved ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      saved ??
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", initial);
     setTheme(initial);
   }, []);
@@ -51,13 +79,23 @@ export default function HelpdeskLayout() {
     {
       label: "Tickets",
       items: [
-        { to: "tickets", label: "My Tickets", icon: <FiUserCheck /> },
-        { to: "tickets?view=all", label: "All Tickets", icon: <FiList /> },
-        { to: "tickets?f=open", label: "Open Tickets", icon: <FiInbox /> },
-        { to: "tickets?f=replied", label: "Replied Tickets", icon: <FiMessageSquare /> },
-        { to: "tickets?f=overdue", label: "Overdue Tickets", icon: <FiClock /> },
-        { to: "tickets?f=closed", label: "Closed Tickets", icon: <FiArchive /> },
-        { to: "tickets?f=escalations", label: "Escalations", icon: <FiAlertTriangle /> },
+        { to: T(), label: "My Tickets", icon: <FiUserCheck />, viewKey: "" },
+        { to: T("all"), label: "All Tickets", icon: <FiList />, viewKey: "all" },
+        { to: T("open"), label: "Open Tickets", icon: <FiInbox />, viewKey: "open" },
+        {
+          to: T("replied"),
+          label: "Replied Tickets",
+          icon: <FiMessageSquare />,
+          viewKey: "replied",
+        },
+        { to: T("overdue"), label: "Overdue Tickets", icon: <FiClock />, viewKey: "overdue" },
+        { to: T("closed"), label: "Closed Tickets", icon: <FiArchive />, viewKey: "closed" },
+        {
+          to: T("escalations"),
+          label: "Escalations",
+          icon: <FiAlertTriangle />,
+          viewKey: "escalations",
+        },
       ],
     },
     {
@@ -76,21 +114,34 @@ export default function HelpdeskLayout() {
     },
   ];
 
+  /** Is a /tickets nav link active for the current URL (path + ?view=) */
+  function ticketsLinkIsActive(expected: string) {
+    const params = new URLSearchParams(location.search);
+    const v = (params.get("view") || params.get("f") || "").toLowerCase();
+    return (v || "") === (expected || "");
+  }
+
   return (
     <div
       data-app="helpdesk"
-      className={`app-helpdesk ${collapsed ? "is-collapsed" : ""} ${navOpen ? "is-mobile-open" : ""}`}
+      className={`app-helpdesk ${collapsed ? "is-collapsed" : ""} ${
+        navOpen ? "is-mobile-open" : ""
+      }`}
     >
       {/* Sidebar / Drawer */}
       <aside className="hd-sidebar">
         <div className="hd-sidebar__top">
-          <button className="hd-iconbtn hd-drawer-close" onClick={() => setNavOpen(false)} aria-label="Close menu">
+          <button
+            className="hd-iconbtn hd-drawer-close"
+            onClick={() => setNavOpen(false)}
+            aria-label="Close menu"
+          >
             <FiX />
           </button>
 
           <div className="hd-brand" title={org.name}>
             <div className="hd-logo">
-              {org.logo ? <img src={org.logo} alt="" /> : (org.name?.[0] ?? "Q")}
+              {org.logo ? <img src={org.logo} alt="" /> : org.name?.[0] ?? "Q"}
             </div>
             <div className="hd-brand__meta">
               <div className="hd-brand__name">{org.name}</div>
@@ -112,28 +163,49 @@ export default function HelpdeskLayout() {
           {SECTIONS.map((s) => (
             <div key={s.label} className="hd-navSec">
               <div className="hd-navSec__label">{s.label}</div>
-              {s.items.map((it) => (
-                <NavLink
-                  key={it.label}
-                  to={it.to}
-                  end={it.exact}
-                  className="hd-navItem"
-                  onClick={() => setNavOpen(false)}
-                >
-                  <span className="hd-navItem__icon">{it.icon}</span>
-                  <span className="hd-navItem__label">{it.label}</span>
-                </NavLink>
-              ))}
+              {s.items.map((it) => {
+                const isTicketsLink =
+                  typeof it.to === "string"
+                    ? it.to.startsWith("tickets")
+                    : it.to.pathname === "tickets";
+
+                return (
+                  <NavLink
+                    key={it.label}
+                    to={it.to}
+                    end={it.exact}
+                    onClick={() => setNavOpen(false)}
+                    className={({ isActive }) => {
+                      let cls = "hd-navItem";
+
+                      // For non-tickets links, NavLink's native isActive is enough
+                      if (!isTicketsLink) return isActive ? `${cls} active` : cls;
+
+                      // For /tickets links: path will be active for all;
+                      // refine active state by comparing ?view=
+                      if (isActive && ticketsLinkIsActive(it.viewKey ?? "")) cls += " active";
+                      return cls;
+                    }}
+                  >
+                    <span className="hd-navItem__icon">{it.icon}</span>
+                    <span className="hd-navItem__label">{it.label}</span>
+                  </NavLink>
+                );
+              })}
             </div>
           ))}
         </nav>
       </aside>
 
-      {/* Top bar – now a direct grid child */}
+      {/* Top bar */}
       <header className="hd-topbar">
         <div className="hd-topbar__inner">
           <div className="hd-left">
-            <button className="hd-iconbtn hd-menu" onClick={() => setNavOpen(true)} aria-label="Open menu">
+            <button
+              className="hd-iconbtn hd-menu"
+              onClick={() => setNavOpen(true)}
+              aria-label="Open menu"
+            >
               <FiMenu />
             </button>
 
