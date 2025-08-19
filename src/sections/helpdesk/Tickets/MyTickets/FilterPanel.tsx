@@ -1,4 +1,3 @@
-import React from "react";
 import QDSelect from "../../../../components/QDSelect";
 import type { Option } from "./MyTickets";
 

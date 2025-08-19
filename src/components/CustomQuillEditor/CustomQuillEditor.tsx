@@ -1,72 +1,99 @@
-import { useEffect, useRef } from "react";
-import type QuillType from "quill";
-import "quill/dist/quill.snow.css";
-import "./CustomQuillEditor.css"; // optional styling below
+// src/components/QDSelect.tsx
+import Select from "react-select";
+import type {
+  Props as RSProps,
+  CSSObjectWithLabel,
+  GroupBase,
+  StylesConfig,
+} from "react-select";
 
-type Props = {
-  value?: string;
-  onChange: (html: string) => void;
-  placeholder?: string;
-  readOnly?: boolean;
+/** Shared QuickDesk select styles (theme-aware) */
+export const selectStyles: StylesConfig<
+  unknown,
+  boolean,
+  GroupBase<unknown>
+> = {
+  control: (base: CSSObjectWithLabel) => ({
+    ...base,
+    background: "var(--surface-2)",
+    borderColor: "var(--border)",
+    color: "var(--text)",
+    minHeight: 38,
+    boxShadow: "none",
+    ":hover": { borderColor: "var(--border)" },
+  }),
+  menu: (base: CSSObjectWithLabel) => ({
+    ...base,
+    background: "var(--surface-1)",
+    color: "var(--text)",
+    border: `1px solid var(--border)`,
+    boxShadow: "var(--shadow-1)",
+    zIndex: 30,
+  }),
+  option: (base: CSSObjectWithLabel, state: any) => ({
+    ...base,
+    background: state.isFocused ? "var(--surface-2)" : "transparent",
+    color: "var(--text)",
+    ":active": { background: "var(--surface-3)" },
+  }),
+  multiValue: (base: CSSObjectWithLabel) => ({
+    ...base,
+    background: "var(--surface-3)",
+    border: `1px solid var(--border)`,
+  }),
+  multiValueLabel: (base: CSSObjectWithLabel) => ({ ...base, color: "var(--text)" }),
+  placeholder: (base: CSSObjectWithLabel) => ({ ...base, color: "var(--text-muted)" }),
+  singleValue: (base: CSSObjectWithLabel) => ({ ...base, color: "var(--text)" }),
+  input: (base: CSSObjectWithLabel) => ({ ...base, color: "var(--text)" }),
 };
 
-export default function CustomQuillEditor({
-  value = "",
-  onChange,
-  placeholder = "Write your message…",
-  readOnly = false,
-}: Props) {
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const quillRef = useRef<QuillType | null>(null);
+export type QDSelectProps<
+  Option,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<Option> = GroupBase<Option>
+> =
+  // Keep all react-select props…
+  Omit<RSProps<Option, IsMulti, Group>, "styles"> & {
+    /** Optional per-instance styles to merge with QD defaults */
+    styles?: StylesConfig<Option, IsMulti, Group>;
+    /** Smaller height, handy in dense filter bars */
+    compact?: boolean;
+  };
 
-  useEffect(() => {
-    let mounted = true;
+/** Drop-in replacement for react-select with QuickDesk defaults */
+export function QDSelect<
+  Option,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<Option> = GroupBase<Option>
+>(props: QDSelectProps<Option, IsMulti, Group>) {
+  const { styles: userStyles, compact, ...rest } = props;
 
-    // Lazy import so Vite pre-bundling is less picky
-    import("quill").then(({ default: Quill }) => {
-      if (!mounted || !hostRef.current) return;
+  // Merge defaults + caller overrides
+  const merged: StylesConfig<Option, IsMulti, Group> = {
+    ...(selectStyles as StylesConfig<Option, IsMulti, Group>),
+    ...(userStyles ?? {}),
+  };
 
-      if (!quillRef.current) {
-        quillRef.current = new Quill(hostRef.current, {
-          theme: "snow",
-          placeholder,
-          readOnly,
-          modules: {
-            toolbar: [
-              ["bold", "italic", "underline", "strike"],
-              [{ list: "ordered" }, { list: "bullet" }],
-              ["link", "image", "clean"],
-            ],
-          },
-        });
-
-        // set initial HTML
-        if (value) {
-          const root = quillRef.current.root as HTMLDivElement;
-          root.innerHTML = value;
-        }
-
-        quillRef.current.on("text-change", () => {
-          const html =
-            (quillRef.current?.root as HTMLDivElement)?.innerHTML ?? "";
-          onChange(html);
-        });
+  // If compact, override control height without mutating `merged`
+  const compactStyles: StylesConfig<Option, IsMulti, Group> = compact
+    ? {
+        ...merged,
+        control: (base: CSSObjectWithLabel, state: any) => {
+          const prev =
+            typeof merged.control === "function"
+              ? (merged.control as any)(base, state)
+              : base;
+          return { ...prev, minHeight: 34 };
+        },
       }
-    });
+    : merged;
 
-    return () => {
-      mounted = false;
-    };
-  }, [onChange, placeholder, readOnly]);
-
-  // keep external value in sync (controlled)
-  useEffect(() => {
-    if (!quillRef.current) return;
-    const root = quillRef.current.root as HTMLDivElement;
-    if (root && root.innerHTML !== value) {
-      root.innerHTML = value || "";
-    }
-  }, [value]);
-
-  return <div className="pt-quillhost" ref={hostRef} />;
+  return (
+    <Select<Option, IsMulti, Group>
+      {...(rest as RSProps<Option, IsMulti, Group>)}
+      styles={compactStyles}
+    />
+  );
 }
+
+export default QDSelect;

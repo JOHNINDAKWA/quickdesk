@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";       // <-- type-only
 import { useOrg } from "../../../app/org";
 
 import {
