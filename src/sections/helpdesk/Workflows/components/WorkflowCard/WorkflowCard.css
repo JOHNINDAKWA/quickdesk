@@ -1,0 +1,61 @@
+.wcard {
+  text-align: left;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: 14px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  box-shadow: var(--shadow-1);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.wcard:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-2);
+  border-color: color-mix(in oklab, var(--brand), var(--border) 70%);
+}
+
+.wcard .spacer { flex: 1; }
+
+.wcard__top {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.dot {
+  width: 8px; height: 8px; border-radius: 999px; display: inline-block;
+}
+.dot.active { background: #10b981; }
+.dot.draft { background: #f59e0b; }
+.dot.archived { background: #6b7280; }
+
+.status {
+  font-size: 12px; color: var(--text-muted); text-transform: capitalize;
+}
+
+.wcard__title {
+  font-weight: 800; font-size: 16px; letter-spacing: .2px;
+}
+
+.wcard__meta {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.chip {
+  font-size: 12px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-2);
+}
+
+.wcard__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+/* subtle type colors */
+.badge-service_request { background: color-mix(in oklab, var(--brand), white 84%); }
+.badge-incident { background: color-mix(in oklab, #ef4444, white 88%); }
+.badge-change { background: color-mix(in oklab, #8b5cf6, white 88%); }
+.badge-task { background: color-mix(in oklab, #3b82f6, white 88%); }

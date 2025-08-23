@@ -1,0 +1,17 @@
+.sb-root { display: grid; gap: 12px; }
+.sb-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sb-head .stit { font-weight: 700; }
+.sb-head .sub { color: var(--text-muted); font-size: 13px; }
+.sb-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.sb-item { position: relative; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--surface-1); padding: 10px; }
+.sb-item.is-selected { outline: 2px solid var(--brand); outline-offset: 2px; }
+.sb-actions { position: absolute; right: 8px; top: 8px; display: inline-flex; gap: 6px; }
+.iconbtn { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
+.iconbtn:disabled { opacity: .5; }
+
+.sb-connector { display: grid; place-items: center; height: 24px; }
+.sb-connector .line { width: 2px; height: 100%; background: var(--border); border-radius: 2px; display: inline-block; }
+.sb-connector .tip { font-size: 11px; color: var(--text-muted); display: inline-flex; gap: 6px; align-items: center; margin-top: 6px; }
+
+.sb-foot { display: inline-flex; gap: 8px; align-items: center; color: var(--text-muted); font-size: 12px; }
+.sb-item.dragging { opacity: .6; }

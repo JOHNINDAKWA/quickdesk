@@ -1,0 +1,18 @@
+.vp-root { display: grid; gap: 10px; }
+.vp-head { display: flex; align-items: center; justify-content: space-between; }
+.vp-head .tit { font-weight: 700; }
+.vp-head .badge { padding: 3px 8px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; }
+.vp-head .badge.ok   { background: var(--tone-green-bg); color: var(--tone-green-fg); border-color: var(--tone-green-border); }
+.vp-head .badge.warn { background: var(--tone-amber-bg); color: var(--tone-amber-fg); border-color: var(--tone-amber-border); }
+.vp-head .badge.bad  { background: var(--tone-red-bg); color: var(--tone-red-fg); border-color: var(--tone-red-border); }
+
+.vp-empty { display: inline-flex; gap: 8px; align-items: center; color: var(--text-muted); }
+
+.vp-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.vp-list .row { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; }
+.vp-list .row.error { background: color-mix(in oklab, var(--tone-red-bg), var(--surface-1) 30%); }
+.vp-list .row.warn  { background: color-mix(in oklab, var(--tone-amber-bg), var(--surface-1) 30%); }
+.vp-list .row.info  { background: var(--surface-2); }
+.vp-list .ic { display: grid; place-items: center; }
+.vp-list .tx { font-size: 13px; }
+.vp-list .link { display: inline-flex; gap: 6px; align-items: center; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-1); }

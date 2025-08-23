@@ -5,6 +5,7 @@ import type {
   CSSObjectWithLabel,
   GroupBase,
   StylesConfig,
+  OptionProps, // <-- Added for correct typing
 } from "react-select";
 
 /** Build theme-aware base styles with correct generics */
@@ -13,14 +14,14 @@ function makeBaseStyles<
   IsMulti extends boolean,
   Group extends GroupBase<Option>
 >(): StylesConfig<Option, IsMulti, Group> {
-  // We keep the implementation typed to CSSObjectWithLabel for the style funcs
   const base = {
     control: (b: CSSObjectWithLabel) => ({
       ...b,
-      background: "var(--surface-2)",
+      // Updated styles for shorter height, smaller font, and transparent background
+      background: "none",
       borderColor: "var(--border)",
-      color: "var(--text)",
-      minHeight: 38,
+      minHeight: 34, // Shorter height
+      fontSize: "0775rem", // Smaller font size
       boxShadow: "none",
       ":hover": { borderColor: "var(--border)" },
     }),
@@ -32,10 +33,13 @@ function makeBaseStyles<
       boxShadow: "var(--shadow-1)",
       zIndex: 30,
     }),
-    option: (b: CSSObjectWithLabel, state: any) => ({
+    option: (b: CSSObjectWithLabel, state: OptionProps<Option, IsMulti, Group>) => ({
       ...b,
+      // Corrected the type of the state parameter from 'any'
       background: state.isFocused ? "var(--surface-2)" : "transparent",
       color: "var(--text)",
+      fontSize: "0.875rem", // Smaller font size
+      padding: "8px 12px", // Smaller padding to match height
       ":active": { background: "var(--surface-3)" },
     }),
     multiValue: (b: CSSObjectWithLabel) => ({
@@ -43,29 +47,23 @@ function makeBaseStyles<
       background: "var(--surface-3)",
       border: `1px solid var(--border)`,
     }),
-    multiValueLabel: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)" }),
-    placeholder: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text-muted)" }),
-    singleValue: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)" }),
-    input: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)" }),
+    multiValueLabel: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)", fontSize: "0.875rem" }),
+    placeholder: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text-muted)", fontSize: "0.875rem" }),
+    singleValue: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)", fontSize: "0.875rem" }),
+    input: (b: CSSObjectWithLabel) => ({ ...b, color: "var(--text)", fontSize: "0.875rem" }),
   } as const;
 
-  // TS doesn’t infer the react-select StylesConfig shape from the above,
-  // so we coerce once here (safe: keys match the contract).
-  return base as unknown as StylesConfig<Option, IsMulti, Group>;
+  return base as StylesConfig<Option, IsMulti, Group>;
 }
 
 export type QDSelectProps<
   Option,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>
-> =
-  // All react-select props EXCEPT styles (we’ll re-declare it as optional)
-  Omit<RSProps<Option, IsMulti, Group>, "styles"> & {
-    /** Optional per-instance styles to merge with QD defaults */
-    styles?: StylesConfig<Option, IsMulti, Group>;
-    /** Smaller height, handy in dense filter bars */
-    compact?: boolean;
-  };
+> = Omit<RSProps<Option, IsMulti, Group>, "styles"> & {
+  styles?: StylesConfig<Option, IsMulti, Group>;
+  compact?: boolean;
+};
 
 export function QDSelect<
   Option,
@@ -74,7 +72,6 @@ export function QDSelect<
 >({ styles: userStyles, compact, ...rest }: QDSelectProps<Option, IsMulti, Group>) {
   const base = makeBaseStyles<Option, IsMulti, Group>();
 
-  // Merge defaults + caller overrides without mutating either
   let merged: StylesConfig<Option, IsMulti, Group> = {
     ...base,
     ...(userStyles ?? {}),
@@ -82,23 +79,18 @@ export function QDSelect<
 
   // Compact tweak (just reduce control min-height)
   if (compact) {
-    const prevControl = merged.control;
     merged = {
       ...merged,
-      control: (b: CSSObjectWithLabel, s: any) => {
-        const out =
-          typeof prevControl === "function" ? (prevControl as any)(b, s) : b;
-        return { ...out, minHeight: 34 };
+      control: (b, s) => {
+        // Correctly handling the merge without using 'any'
+        const prevControl = base.control;
+        const baseStyles = prevControl ? prevControl(b, s) : b;
+        return { ...baseStyles, minHeight: 30, fontSize: "0.75rem" };
       },
     };
   }
 
-  return (
-    <Select<Option, IsMulti, Group>
-      {...(rest as RSProps<Option, IsMulti, Group>)}
-      styles={merged}
-    />
-  );
+  return <Select {...(rest as RSProps<Option, IsMulti, Group>)} styles={merged} />;
 }
 
 export default QDSelect;

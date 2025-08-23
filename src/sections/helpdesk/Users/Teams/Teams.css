@@ -1,0 +1,214 @@
+/* ===============================
+   Teams — Clean table look
+   (no chunky button rectangles)
+   =============================== */
+
+.team-root { padding: 12px; }
+
+/* Top bar */
+.team-bar {
+  display: flex; gap: 10px; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.team-search {
+  flex: 1;
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+.team-search input {
+  border: 0; outline: none; width: 100%; background: transparent; color: var(--text); font-size: 14px;
+}
+
+/* Table shell */
+.team-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+/* Header + rows share same grid */
+.team-head, .team-row {
+  display: grid;
+  grid-template-columns: minmax(240px,2fr) 1.4fr 1.2fr 0.8fr 1fr 84px;
+  align-items: center;
+  gap: 0;
+}
+
+/* Header */
+.team-head {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.team-head .h {
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Row */
+.team-row { padding: 10px 12px; }
+.team-row + .team-row { border-top: 1px solid var(--border); }
+.team-row.is-archived { opacity: .6; }
+
+/* CELLS
+   Reset buttons so they look like text links, not big boxes */
+.team-row .cell.name,
+.team-row .cell.dept.link {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+/* Name cell styling */
+.cell.name .main { font-weight: 700; }
+.cell.name .sub  { font-size: 12px; color: var(--text-muted); }
+.cell.name:hover .main {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+/* Department “link” cell */
+.cell.dept.link {
+  color: color-mix(in oklab, var(--brand), var(--text) 20%);
+  text-decoration: underline dotted;
+}
+.cell.dept.link:hover { color: var(--brand); }
+
+/* Other cells */
+.cell.lead, .cell.users, .cell.created { font-size: 13px; color: var(--text); }
+.cell.act { display: inline-flex; justify-content: flex-end; gap: 6px; }
+
+/* Icon buttons on the right */
+.iconbtn {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid; place-items: center;
+  color: var(--text);
+}
+.iconbtn:hover { background: var(--surface-3); }
+
+/* Empty state */
+.team-empty { padding: 22px; text-align: center; }
+.team-empty .icon {
+  width: 48px; height: 48px; margin: 0 auto 8px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--tone-green-bg); color: var(--tone-green-fg); border: 1px solid var(--tone-green-border);
+}
+
+/* Pager */
+.team-pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px; margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+}
+.team-pager .info { font-size: 13px; color: var(--text-muted); }
+.team-pager .ctrls { display: inline-flex; align-items: center; gap: 8px; }
+.team-pager .pg { font-size: 13px; color: var(--text-muted); }
+
+
+/* ===============================
+   Teams — Modal styles
+   =============================== */
+.tm-modal__backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 900;
+}
+.tm-modal {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 92vw);
+  max-height: 82vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  z-index: 901;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-2);
+}
+.tm-modal.neutral {}
+.tm-modal.warning .tm-modal__head h3 { color: var(--tone-amber-fg); }
+.tm-modal.danger  .tm-modal__head h3 { color: var(--tone-red-fg); }
+
+.tm-modal__head,
+.tm-modal__foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tm-modal__foot { border-bottom: 0; border-top: 1px solid var(--border); }
+.tm-modal__head h3 { margin: 0; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
+
+.tm-modal__body { padding: 12px; overflow: auto; }
+.tm-modal .grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+}
+.tm-modal .field { display: grid; gap: 6px; }
+.tm-modal .field > label { font-size: 12px; color: var(--text-muted); }
+.tm-modal .field .req { color: var(--tone-red-fg); }
+
+.tm-input {
+  width: 100%;
+  padding: 8px 10px; font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+}
+.tm-input:focus { border-color: color-mix(in oklab, var(--brand), var(--border) 60%); }
+
+.btn.small { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+
+/* Archived tag next to name */
+.arch-tag {
+  margin-left: 8px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--tone-gray-bg);
+  color: var(--tone-gray-fg);
+  border: 1px solid var(--tone-gray-border);
+}
+
+/* Responsive modal form */
+@media (max-width: 680px) {
+  .tm-modal .grid { grid-template-columns: 1fr; }
+}
+
+/* Responsive tweaks */
+@media (max-width: 1100px) {
+  .team-head, .team-row {
+    grid-template-columns: minmax(200px,2fr) 1.3fr 1.1fr 0.7fr 1fr 78px;
+  }
+}
+@media (max-width: 780px) {
+  .team-head, .team-row {
+    grid-template-columns: minmax(160px,2fr) 1fr 1fr 0.7fr 0 74px;
+  }
+  .cell.created { display: none; }
+}

@@ -1,0 +1,34 @@
+.dg {
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  border-radius: var(--radius-xl);
+  padding: 10px;
+}
+
+.dg__head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 6px 10px;
+  border-bottom: 1px dashed var(--border);
+}
+.dg__toggle {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.dg__title { margin: 0; font-size: 16px; font-weight: 700; }
+.dg__count {
+  font-size: 12px; padding: 2px 8px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.dg__spacer { flex: 1; }
+
+.dg__grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  padding: 12px 6px 4px;
+}
+.dg__empty {
+  padding: 16px; color: var(--text-muted);
+}

@@ -8,10 +8,21 @@ import {
   FiClock,
   FiChevronDown,
   FiEdit3,
+  FiZap,
 } from "react-icons/fi";
 import QDSelect from "../../../../../components/QDSelect";
 import CustomQuillEditor from "../../../../../components/CustomQuillEditor/CustomQuillEditor";
 import "./TicketDetails.css";
+
+/* =========================================================
+   NEW: Imports for split components (you will create these)
+   ======================================================= */
+// TODO: create these files next and export default components named below.
+import DetailsAside from "./TicketDetails.Aside";
+import AIHelper from "./TicketDetails.AI";
+
+
+import TicketImage from "../../../../../assets/images/about1.jpg"
 
 /* =========================================================
    Config — choose save model
@@ -19,13 +30,13 @@ import "./TicketDetails.css";
 const USE_AUTOSAVE = false; // ← set true to auto-save detail edits
 
 /* =========================================================
-   Types
+   Types (exported so the split files can reuse)
    ======================================================= */
-type TicketStatus = "open" | "pending" | "in_progress" | "on_hold" | "solved" | "closed";
-type TicketPriority = "urgent" | "high" | "normal" | "low";
-type SLAState = "ok" | "at_risk" | "breached";
+export type TicketStatus = "open" | "pending" | "in_progress" | "on_hold" | "solved" | "closed";
+export type TicketPriority = "urgent" | "high" | "normal" | "low";
+export type SLAState = "ok" | "at_risk" | "breached";
 
-type EscalationEvent = {
+export type EscalationEvent = {
   id: string;
   when: string;
   by: string;
@@ -35,16 +46,18 @@ type EscalationEvent = {
   priorityBump?: TicketPriority;
 };
 
-type Message = {
+export type Attachment = { id: string; name: string; size: number; url?: string };
+
+export type Message = {
   id: string;
   author: string;
   internal?: boolean;
   html: string;
-  attachments?: { id: string; name: string; size: number }[];
+  attachments?: Attachment[];
   createdAt: string;
 };
 
-type Ticket = {
+export type Ticket = {
   id: string;
   ref: string;
   subject: string;
@@ -61,10 +74,14 @@ type Ticket = {
   watchers: string[];
   escalations: EscalationEvent[];
   messages: Message[];
+  /** NEW: structured description captured at submission */
+  descriptionHtml?: string;
+  /** NEW: optional images/screenshots uploaded at submission */
+  descriptionImages?: string[]; // URLs/base64; render first few
 };
 
 /* Only the fields editable on the right/inline subject */
-type EditableMeta = Pick<
+export type EditableMeta = Pick<
   Ticket,
   "subject" | "status" | "priority" | "assignee" | "team" | "category" | "tags"
 >;
@@ -127,12 +144,12 @@ const shallowEqMeta = (a: EditableMeta, b: EditableMeta) =>
   a.tags.join(",") === b.tags.join(",");
 
 /* =========================================================
-   Main Page
+   Main Page (now hosts the MAIN AREA only)
    ======================================================= */
 export default function TicketDetail() {
   const { id } = useParams();
 
-  // --- Seed mock ticket ---
+  // --- Seed mock ticket with description & an image ---
   const [ticket, setTicket] = useState<Ticket>(() => {
     const now = new Date();
     const created = new Date(now.getTime() - 1000 * 60 * 60 * 24);
@@ -152,6 +169,12 @@ export default function TicketDetail() {
       sla: "at_risk",
       watchers: ["Mary W", "Brian A"],
       escalations: [],
+      descriptionHtml:
+        "<p>After resetting my password, the portal shows <em>'invalid token'</em> and loops back to login.</p><ul><li>Browser: Chrome</li><li>OS: Windows 11</li></ul>",
+      descriptionImages: [
+        // placeholder image; replace with real URL/base64 from your uploader
+        TicketImage,
+      ],
       messages: [
         {
           id: nid(),
@@ -172,7 +195,6 @@ export default function TicketDetail() {
   /* -------- Draft meta for the details panel/subject -------- */
   const [meta, setMeta] = useState<EditableMeta>(() => pickEditable(ticket));
   useEffect(() => {
-    // If a different ticket loads, reset the draft
     setMeta(pickEditable(ticket));
   }, [ticket.id]); // eslint-disable-line
 
@@ -193,7 +215,6 @@ export default function TicketDetail() {
     setTimeout(() => setJustSaved(false), 1200);
   }
 
-  // Optional auto-save
   useEffect(() => {
     if (!USE_AUTOSAVE || !dirty) return;
     const id = setTimeout(persistMeta, 600);
@@ -254,6 +275,51 @@ export default function TicketDetail() {
     setEscOpen(false);
   }
 
+  /* -------- NEW: AI helper visibility + resizable layout -------- */
+  const [aiOpen, setAiOpen] = useState(false);
+
+  // widths are percentages; we’ll wire CSS next
+  const [mainPct, setMainPct] = useState(75);     // chat area
+  const [asidePct, setAsidePct] = useState(25);   // details
+  const [aiPct, setAiPct] = useState(32);         // AI helper when open
+
+  // drag state
+  const draggingRef = useRef<null | { type: "main-aside" | "main-ai"; startX: number; startMain: number; startAside: number; startAI: number }>(null);
+
+  function onDragDown(e: React.MouseEvent, type: "main-aside" | "main-ai") {
+    draggingRef.current = {
+      type,
+      startX: e.clientX,
+      startMain: mainPct,
+      startAside: asidePct,
+      startAI: aiPct,
+    };
+    window.addEventListener("mousemove", onDragMove);
+    window.addEventListener("mouseup", onDragUp);
+  }
+  function onDragMove(e: MouseEvent) {
+    const st = draggingRef.current;
+    if (!st) return;
+    const dx = ((e.clientX - st.startX) / (window.innerWidth || 1)) * 100;
+    if (st.type === "main-aside") {
+      const newMain = Math.min(85, Math.max(20, st.startMain + dx));
+      const newAside = Math.max(15, 100 - newMain - (aiOpen ? aiPct : 0));
+      setMainPct(newMain);
+      setAsidePct(newAside);
+    } else {
+      // main <-> ai splitter (when AI is open)
+      const newMain = Math.min(85, Math.max(20, st.startMain + dx));
+      const newAI = Math.max(18, 100 - newMain - asidePct);
+      setMainPct(newMain);
+      setAiPct(newAI);
+    }
+  }
+  function onDragUp() {
+    draggingRef.current = null;
+    window.removeEventListener("mousemove", onDragMove);
+    window.removeEventListener("mouseup", onDragUp);
+  }
+
   return (
     <div className="td-root">
       {/* Header */}
@@ -274,6 +340,15 @@ export default function TicketDetail() {
         </div>
 
         <div className="td-head__right">
+          <button
+            className={`btn ${aiOpen ? "btn-ghost" : "btn-secondary"}`}
+            onClick={() => setAiOpen(v => !v)}
+            title="Toggle AI helper"
+            aria-pressed={aiOpen}
+          >
+            <FiZap /> AI
+          </button>
+
           {!USE_AUTOSAVE && (
             <button
               className="btn btn-primary"
@@ -290,25 +365,87 @@ export default function TicketDetail() {
         </div>
       </header>
 
-      {/* Main split */}
-      <div className="td-main">
-        {/* LEFT: Conversation */}
-        <ConversationPane
-          messages={ticket.messages}
-          onSendPublic={() => addReply(false)}
-          onSendInternal={() => addReply(true)}
-          replyHtml={replyHtml}
-          setReplyHtml={setReplyHtml}
-          files={files}
-          setFiles={setFiles}
+      {/* Main split: MAIN (conversation) + optional AI + ASIDE (details) */}
+      <div className={`td-main ${aiOpen ? "has-ai" : ""}`}>
+        {/* MAIN: Issue header + thread + composer */}
+        <section
+          className="td-convo panel"
+          style={{ flexBasis: `${mainPct}%` }}
+        >
+          {/* NEW: Issue header (description + optional images) */}
+          <IssueHeader
+            subject={meta.subject}
+            descriptionHtml={ticket.descriptionHtml}
+            images={ticket.descriptionImages}
+            requester={ticket.requester}
+            createdAt={ticket.createdAt}
+          />
+
+          {/* Timeline */}
+          <Thread messages={ticket.messages} />
+
+          {/* Composer */}
+          <Composer
+            replyHtml={replyHtml}
+            setReplyHtml={setReplyHtml}
+            files={files}
+            setFiles={setFiles}
+            onSendPublic={() => addReply(false)}
+            onSendInternal={() => addReply(true)}
+          />
+        </section>
+
+        {/* Splitter between MAIN and AI (only when AI open) */}
+        {aiOpen && (
+          <div
+            className="td-splitter td-splitter--main-ai"
+            onMouseDown={(e) => onDragDown(e, "main-ai")}
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize chat and AI panels"
+          />
+        )}
+
+        {/* AI helper (collapsible/expandable) */}
+        {aiOpen && (
+          <section
+            className="td-ai panel"
+            style={{ flexBasis: `${aiPct}%` }}
+          >
+            {/* TODO: Implement this in ./TicketDetails.AI */}
+            <AIHelper
+              ticket={ticket}
+              messages={ticket.messages}
+              onInsertText={(html) => setReplyHtml((prev) => `${prev}${html}`)}
+            />
+          </section>
+        )}
+
+        {/* Splitter between (MAIN + optional AI) and ASIDE */}
+        <div
+          className="td-splitter td-splitter--main-aside"
+          onMouseDown={(e) => onDragDown(e, "main-aside")}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize chat/AI and details panels"
         />
 
-        {/* RIGHT: Editable details — bound to draft meta */}
-        <DetailsSidebar
-          meta={meta}
-          ticket={ticket}
-          onChange={(patch) => setMeta((m) => ({ ...m, ...patch }))}
-        />
+        {/* RIGHT: Details (draft meta) */}
+        <aside
+          className="td-side panel"
+          style={{ flexBasis: `${asidePct}%` }}
+        >
+          {/* TODO: Implement this in ./TicketDetails.Aside */}
+          <DetailsAside
+            ticket={ticket}
+            meta={meta}
+            statusOptions={statusOptions}
+            priorityOptions={priorityOptions}
+            teamOptions={teamOptions}
+            categoryOptions={categoryOptions}
+            onChange={(patch) => setMeta((m) => ({ ...m, ...patch }))}
+          />
+        </aside>
       </div>
 
       {escOpen && (
@@ -361,10 +498,93 @@ function InlineSubject({
 }
 
 /* =========================================================
-   Conversation pane (timeline + composer)
+   NEW: Issue header (subject/description/images)
    ======================================================= */
-function ConversationPane({
-  messages,
+function IssueHeader({
+  subject,
+  descriptionHtml,
+  images,
+  requester,
+  createdAt,
+}: {
+  subject: string;
+  descriptionHtml?: string;
+  images?: string[];
+  requester: string;
+  createdAt: string;
+}) {
+  return (
+    <div className="td-issue">
+      <div className="td-issue__head">
+        <h2 className="td-issue__title">{subject}</h2>
+        <div className="td-issue__meta">
+          <span className="muted">From</span> {requester}
+          <span className="td-msg__dot">•</span>
+          <span className="muted"><FiClock /> {timeAgo(createdAt)}</span>
+        </div>
+      </div>
+
+      {descriptionHtml && (
+        <div
+          className="td-issue__desc"
+          dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+        />
+      )}
+
+      {images && images.length > 0 && (
+        <div className="td-issue__images">
+          {images.slice(0, 3).map((src, i) => (
+            <a key={i} className="td-issue__imgwrap" href={src} target="_blank" rel="noreferrer">
+              <img src={src} alt={`Attachment ${i + 1}`} />
+            </a>
+          ))}
+        </div>
+      )}
+
+      <div className="td-issue__divider" />
+    </div>
+  );
+}
+
+/* =========================================================
+   Thread (messages)
+   ======================================================= */
+function Thread({ messages }: { messages: Message[] }) {
+  const sorted = useMemo(
+    () => [...messages].sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)),
+    [messages]
+  );
+
+  return (
+    <div className="td-thread">
+      {sorted.map((m) => (
+        <article key={m.id} className={`td-msg ${m.internal ? "is-internal" : ""}`}>
+          <div className="td-msg__meta">
+            <span className="td-msg__author">{m.author}</span>
+            <span className="td-msg__dot">•</span>
+            <span className="td-msg__time">{timeAgo(m.createdAt)}</span>
+            {m.internal && <span className="td-msg__badge">internal</span>}
+          </div>
+          <div className="td-msg__body" dangerouslySetInnerHTML={{ __html: m.html }} />
+          {m.attachments?.length ? (
+            <div className="td-msg__atts">
+              {m.attachments.map((a) => (
+                <a key={a.id} className="td-att" href={a.url || "#"} onClick={(e) => !a.url && e.preventDefault()}>
+                  {a.name} <span className="muted">({(a.size / 1024).toFixed(0)} KB)</span>
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+/* =========================================================
+   Composer (editor + files + send)
+   ======================================================= */
+function Composer({
   replyHtml,
   setReplyHtml,
   files,
@@ -372,7 +592,6 @@ function ConversationPane({
   onSendPublic,
   onSendInternal,
 }: {
-  messages: Message[];
   replyHtml: string;
   setReplyHtml: (v: string) => void;
   files: File[];
@@ -381,228 +600,61 @@ function ConversationPane({
   onSendInternal: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const sorted = useMemo(
-    () => [...messages].sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)),
-    [messages]
-  );
 
   return (
-    <section className="td-convo panel">
-      {/* Timeline */}
-      <div className="td-thread">
-        {sorted.map((m) => (
-          <article key={m.id} className={`td-msg ${m.internal ? "is-internal" : ""}`}>
-            <div className="td-msg__meta">
-              <span className="td-msg__author">{m.author}</span>
-              <span className="td-msg__dot">•</span>
-              <span className="td-msg__time">{timeAgo(m.createdAt)}</span>
-              {m.internal && <span className="td-msg__badge">internal</span>}
+    <div className="td-composer">
+      <CustomQuillEditor value={replyHtml} onChange={setReplyHtml} placeholder="Write a reply…" />
+      <div className="td-compose__bar">
+        <div className="td-files">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            hidden
+            onChange={(e) => {
+              const list = e.target.files ? Array.from(e.target.files) : [];
+              setFiles([...files, ...list]);
+              e.currentTarget.value = "";
+            }}
+          />
+          <button className="btn btn-ghost" onClick={() => fileInputRef.current?.click()} title="Attach files">
+            <FiPaperclip /> Attach
+          </button>
+          {!!files.length && (
+            <div className="td-files__list">
+              {files.map((f, i) => (
+                <span key={i} className="chip">
+                  {f.name}
+                  <button
+                    className="chip__x"
+                    onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
+                    aria-label={`Remove ${f.name}`}
+                  >
+                    <FiX />
+                  </button>
+                </span>
+              ))}
             </div>
-            <div className="td-msg__body" dangerouslySetInnerHTML={{ __html: m.html }} />
-            {m.attachments?.length ? (
-              <div className="td-msg__atts">
-                {m.attachments.map((a) => (
-                  <a key={a.id} className="td-att" href="#" onClick={(e) => e.preventDefault()}>
-                    {a.name} <span className="muted">({(a.size / 1024).toFixed(0)} KB)</span>
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </article>
-        ))}
-      </div>
+          )}
+        </div>
 
-      {/* Composer */}
-      <div className="td-composer">
-        <CustomQuillEditor value={replyHtml} onChange={setReplyHtml} placeholder="Write a reply…" />
-        <div className="td-compose__bar">
-          <div className="td-files">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              hidden
-              onChange={(e) => {
-                const list = e.target.files ? Array.from(e.target.files) : [];
-                setFiles([...files, ...list]);
-                e.currentTarget.value = "";
-              }}
-            />
-            <button className="btn btn-ghost" onClick={() => fileInputRef.current?.click()} title="Attach files">
-              <FiPaperclip /> Attach
-            </button>
-            {!!files.length && (
-              <div className="td-files__list">
-                {files.map((f, i) => (
-                  <span key={i} className="chip">
-                    {f.name}
-                    <button className="chip__x" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} aria-label={`Remove ${f.name}`}>
-                      <FiX />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="td-send">
-            <button className="btn btn-ghost" onClick={onSendInternal} title="Add internal note">
-              Internal note
-            </button>
-            <button className="btn btn-primary" onClick={onSendPublic} title="Send reply">
-              <FiSend /> Send
-            </button>
-          </div>
+        <div className="td-send">
+          <button className="btn btn-ghost" onClick={onSendInternal} title="Add internal note">
+            Internal note
+          </button>
+          <button className="btn btn-primary" onClick={onSendPublic} title="Send reply">
+            <FiSend /> Send
+          </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
 /* =========================================================
-   Editable details (uses draft meta)
+   Details aside: moved to separate file (imported above)
+   - We pass data + callbacks; implement UI in TicketDetails.Aside.tsx
    ======================================================= */
-function DetailsSidebar({
-  ticket,
-  meta,
-  onChange,
-}: {
-  ticket: Ticket;
-  meta: EditableMeta;
-  onChange: (patch: Partial<EditableMeta>) => void;
-}) {
-  return (
-    <aside className="td-side panel">
-      <div className="td-side__group">
-        <label>Status</label>
-        <QDSelect
-          instanceId="t-status"
-          options={statusOptions}
-          value={statusOptions.find((o) => o.value === meta.status)}
-          onChange={(v) => onChange({ status: (v as any).value })}
-          compact
-        />
-      </div>
-
-      <div className="td-side__group">
-        <label>Priority</label>
-        <QDSelect
-          instanceId="t-priority"
-          options={priorityOptions}
-          value={priorityOptions.find((o) => o.value === meta.priority)}
-          onChange={(v) => onChange({ priority: (v as any).value })}
-          compact
-        />
-      </div>
-
-      <div className="td-side__group">
-        <label>Assignee</label>
-        <input
-          className="input"
-          value={meta.assignee ?? ""}
-          onChange={(e) => onChange({ assignee: e.target.value })}
-          placeholder="Unassigned"
-        />
-      </div>
-
-      <div className="td-side__group">
-        <label>Team</label>
-        <QDSelect
-          instanceId="t-team"
-          options={teamOptions}
-          value={teamOptions.find((o) => o.value === meta.team)}
-          onChange={(v) => onChange({ team: (v as any).value })}
-          compact
-        />
-      </div>
-
-      <div className="td-side__group">
-        <label>Category</label>
-        <QDSelect
-          instanceId="t-category"
-          options={categoryOptions}
-          value={categoryOptions.find((o) => o.value === meta.category)}
-          onChange={(v) => onChange({ category: (v as any).value })}
-          compact
-        />
-      </div>
-
-      <div className="td-side__group">
-        <label>Tags</label>
-        <input
-          className="input"
-          value={meta.tags.join(", ")}
-          onChange={(e) =>
-            onChange({
-              tags: e.currentTarget.value
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean),
-            })
-          }
-          placeholder="comma, separated, tags"
-        />
-      </div>
-
-      <div className="td-side__meta">
-        <div className="row">
-          <span className="muted">Requester</span>
-          <span>{ticket.requester}</span>
-        </div>
-        <div className="row">
-          <span className="muted">SLA</span>
-          <span className={`badge sla-${ticket.sla}`}>{slaLabel(ticket.sla)}</span>
-        </div>
-        <div className="row">
-          <span className="muted">Created</span>
-          <span title={new Date(ticket.createdAt).toLocaleString()}>
-            <FiClock /> {timeAgo(ticket.createdAt)}
-          </span>
-        </div>
-        <div className="row">
-          <span className="muted">Updated</span>
-          <span title={new Date(ticket.updatedAt).toLocaleString()}>
-            <FiClock /> {timeAgo(ticket.updatedAt)}
-          </span>
-        </div>
-      </div>
-
-      {/* Escalation history */}
-      <div className="td-side__group">
-        <label>Escalation history</label>
-        {ticket.escalations.length === 0 ? (
-          <div className="muted">No escalations yet.</div>
-        ) : (
-          <ul className="td-esc__list">
-            {ticket.escalations.map((e) => (
-              <li key={e.id} className="td-esc__item">
-                <div className="top">
-                  <span className="badge">L{e.level}</span>
-                  <span className="muted">{timeAgo(e.when)}</span>
-                </div>
-                <div className="body">
-                  <div>
-                    To <b>{e.toTeam}</b> by <b>{e.by}</b>
-                  </div>
-                  {e.priorityBump && <div className="muted">Priority → {e.priorityBump}</div>}
-                  <div className="muted">“{e.reason}”</div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </aside>
-  );
-}
-
-function slaLabel(s: SLAState) {
-  switch (s) {
-    case "ok": return "On track";
-    case "at_risk": return "At risk";
-    case "breached": return "Breached";
-  }
-}
 
 /* =========================================================
    Escalate modal (unchanged)
@@ -708,4 +760,15 @@ function EscalateModal({
       </div>
     </>
   );
+}
+
+/* =========================================================
+   Utilities
+   ======================================================= */
+function slaLabel(s: SLAState) {
+  switch (s) {
+    case "ok": return "On track";
+    case "at_risk": return "At risk";
+    case "breached": return "Breached";
+  }
 }

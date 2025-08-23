@@ -1,0 +1,78 @@
+.sid-root {
+  position: sticky;
+  top: 10px;
+  align-self: start;
+  height: fit-content;
+  opacity: 1;
+  transition: opacity var(--transition-med);
+}
+.sid-root:not(.open) {
+  opacity: 0.6;
+}
+.sid-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.sid-head .l {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 700;
+}
+
+.sid-tabs {
+  display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.sid-tabs .tab {
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 10px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+}
+.sid-tabs .tab.active {
+  background: var(--brand-weak);
+  color: var(--on-brand);
+  border-color: color-mix(in oklab, var(--brand), black 10%);
+}
+
+.sid-body {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+.panel.soft {
+  background: var(--surface-2);
+  border: 1px dashed var(--border);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field > span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-1);
+  color: var(--text);
+}

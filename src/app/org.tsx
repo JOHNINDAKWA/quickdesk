@@ -11,7 +11,13 @@ export type Org = {
 
 const OrgContext = createContext<Org | null>(null);
 
-export function OrgProvider({ value, children }: { value: Org; children: React.ReactNode }) {
+export function OrgProvider({
+  value,
+  children,
+}: {
+  value: Org;
+  children: React.ReactNode;
+}) {
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
 
@@ -24,7 +30,9 @@ export function useOrg() {
 /** Backend-ready fetch. For now it falls back to a friendly stub in dev. */
 export async function fetchOrg(slug: string): Promise<Org | null> {
   try {
-    const res = await fetch(`/api/orgs/${encodeURIComponent(slug)}`, { credentials: "include" });
+    const res = await fetch(`/api/orgs/${encodeURIComponent(slug)}`, {
+      credentials: "include",
+    });
     if (res.ok) return (await res.json()) as Org;
   } catch (_) {}
   // DEV fallback so you can click around

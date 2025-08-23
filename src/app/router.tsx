@@ -1,4 +1,9 @@
-import { createBrowserRouter, Navigate, Outlet, useLoaderData } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  useLoaderData,
+} from "react-router-dom";
 import type { Org } from "./org";
 import { OrgProvider, fetchOrg } from "./org";
 
@@ -28,6 +33,11 @@ import Home from "../sections/portal/Home/Home";
 import NewRequest from "../sections/portal/NewRequest/NewRequest";
 import MyRequests from "../sections/portal/Requests/Requests";
 import TicketDetail from "../sections/portal/Requests/TicketDetail";
+import UsersPage from "../sections/helpdesk/Users/Users";
+import NewUserPage from "../sections/helpdesk/Users/NewUser/NewUser";
+import UserDetailPage from "../sections/helpdesk/Users/UserDetail/UserDetail";
+import WorkflowsHome from "../sections/helpdesk/Workflows/pages/WorkflowsHome/WorkflowsHome";
+import WorkflowDetailPage from "../sections/helpdesk/Workflows/pages/WorkflowDetail/WorkflowDetail";
 
 /* ------------ Loader: validate/fetch org (Fix B: inline type) ------------ */
 async function orgLoader({ params }: { params: { orgSlug?: string } }) {
@@ -58,18 +68,24 @@ function OrgNotFound() {
     <div className="panel" style={{ margin: 16 }}>
       <h2>Organization not found</h2>
       <p className="text-muted">Check the URL or contact your administrator.</p>
-      <a className="btn" href="/">Go to homepage</a>
+      <a className="btn" href="/">
+        Go to homepage
+      </a>
     </div>
   );
 }
 
 /* ------------ Legacy redirects (optional during migration) ------------ */
 function LegacyDeskRedirect() {
-  const last = (typeof window !== "undefined" && localStorage.getItem("qd_last_org")) || "";
+  const last =
+    (typeof window !== "undefined" && localStorage.getItem("qd_last_org")) ||
+    "";
   return <Navigate to={last ? `/${last}/console` : "/"} replace />;
 }
 function LegacyPortalRedirect() {
-  const last = (typeof window !== "undefined" && localStorage.getItem("qd_last_org")) || "";
+  const last =
+    (typeof window !== "undefined" && localStorage.getItem("qd_last_org")) ||
+    "";
   return <Navigate to={last ? `/${last}/portal` : "/"} replace />;
 }
 
@@ -111,9 +127,58 @@ export const router = createBrowserRouter([
         element: <HelpdeskLayout />,
         children: [
           { index: true, element: <HKDashboard /> },
-          { path: "tickets", element: <MyTickets /> },
-          { path: "tickets/:id", element: <TicketDetails /> }, 
+          {
+            path: "notifications",
+            element: (
+              <div className="panel" style={{ margin: 16 }}>
+                <h3>Notifications (coming soon)</h3>
+              </div>
+            ),
+          },
 
+          { path: "tickets", element: <MyTickets /> },
+          { path: "tickets/:id", element: <TicketDetails /> },
+
+          { path: "users", element: <UsersPage /> },
+          { path: "users/new", element: <NewUserPage /> },
+          { path: "users/:id", element: <UserDetailPage /> },
+
+          { path: "workflows", element: <WorkflowsHome /> },
+          { path: "workflows/:id", element: <WorkflowDetailPage /> },
+
+          // Lightweight placeholders to satisfy sidebar links (swap later)
+          {
+            path: "kb",
+            element: (
+              <div className="panel" style={{ margin: 16 }}>
+                <h3>Knowledge Base (coming soon)</h3>
+              </div>
+            ),
+          },
+          {
+            path: "sla",
+            element: (
+              <div className="panel" style={{ margin: 16 }}>
+                <h3>SLA Monitor (coming soon)</h3>
+              </div>
+            ),
+          },
+          {
+            path: "reports",
+            element: (
+              <div className="panel" style={{ margin: 16 }}>
+                <h3>Reports (coming soon)</h3>
+              </div>
+            ),
+          },
+          {
+            path: "settings",
+            element: (
+              <div className="panel" style={{ margin: 16 }}>
+                <h3>Settings (coming soon)</h3>
+              </div>
+            ),
+          },
         ],
       },
       {
@@ -123,7 +188,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: "new-request", element: <NewRequest /> },
           { path: "requests", element: <MyRequests /> },
-          { path: "requests/:id", element: <TicketDetail /> }, 
+          { path: "requests/:id", element: <TicketDetail /> },
         ],
       },
     ],

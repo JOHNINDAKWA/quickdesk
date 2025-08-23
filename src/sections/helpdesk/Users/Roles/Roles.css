@@ -1,0 +1,184 @@
+/* ==========================================
+   Roles & Permissions — two-pane designer
+   ========================================== */
+
+.roles-root { display: grid; gap: 0; }
+
+/* Top bar */
+.roles-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-1);
+}
+.roles-search {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+.roles-search .icon { opacity: .7; }
+.roles-search input {
+  border: 0; outline: none; width: 100%; background: transparent; color: var(--text); font-size: 14px;
+}
+
+/* Two-pane */
+.roles-main { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 280px); }
+.roles-list {
+  border-right: 1px solid var(--border);
+  background: var(--surface-1);
+  display: grid; grid-template-rows: auto 1fr;
+}
+.roles-list__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 12px; font-weight: 600;
+}
+.roles-scroll { overflow: auto; padding: 6px; }
+
+.role-item {
+  width: 100%;
+  display: grid; gap: 4px;
+  text-align: left;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px;
+  margin: 6px 6px;
+  cursor: pointer;
+}
+.role-item .title { font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
+.role-item .desc { font-size: 12px; color: var(--text-muted); }
+.role-item .meta { font-size: 12px; color: var(--text-muted); display: inline-flex; gap: 6px; align-items: center; }
+.role-item.active { outline: 2px solid var(--brand); border-color: color-mix(in oklab, var(--brand), var(--border) 60%); }
+.role-item.archived { opacity: .65; }
+.chip {
+  font-size: 11px; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.chip.sys { background: var(--tone-blue-bg); color: var(--tone-blue-fg); border-color: var(--tone-blue-border); }
+.chip.arch { background: var(--tone-gray-bg); color: var(--tone-gray-fg); border-color: var(--tone-gray-border); }
+
+/* Editor */
+.roles-editor { padding: 12px; }
+.re-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 8px;
+}
+.re-title h3 { margin: 0; }
+.re-actions { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+
+.re-presets { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; }
+.preset-row { display: inline-flex; gap: 8px; }
+.tag {
+  padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface-2); font-size: 12px;
+}
+.tag:hover { background: var(--surface-3); }
+
+/* Permission grid */
+.perm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 10px;
+}
+@media (max-width: 1100px) { .roles-main { grid-template-columns: 1fr; } }
+@media (max-width: 920px) { .perm-grid { grid-template-columns: 1fr; } }
+
+.perm-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-1);
+  padding: 10px;
+  box-shadow: var(--shadow-1);
+}
+.perm-card__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding-bottom: 8px; border-bottom: 1px dashed var(--border);
+}
+.perm-card__head .title { font-weight: 700; }
+
+/* Category switch (all/none) */
+.switch {
+  width: 46px; height: 26px; border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: inline-flex; align-items: center;
+  padding: 2px; position: relative;
+}
+.switch.on  { background: color-mix(in oklab, var(--brand), var(--surface-2) 70%); border-color: color-mix(in oklab, var(--brand), var(--border) 60%); }
+.switch.mixed { background: linear-gradient(90deg, var(--surface-2) 0%, color-mix(in oklab, var(--brand), var(--surface-2) 70%) 100%); }
+.switch span {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--surface-1); box-shadow: var(--shadow-1);
+  transform: translateX(0); transition: transform var(--transition-med) ease;
+}
+.switch.on span { transform: translateX(20px); }
+.switch, .toggle { cursor: pointer; }
+
+/* Permission rows */
+.perm-list { display: grid; gap: 8px; padding-top: 10px; }
+.perm-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  padding: 6px; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.perm-row .info .name { font-weight: 600; }
+.perm-row .info .hint { font-size: 12px; color: var(--text-muted); }
+
+/* Toggle */
+.toggle {
+  width: 44px; height: 26px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-1);
+  position: relative; display: inline-flex; align-items: center; padding: 2px;
+}
+.toggle .knob {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2);
+  box-shadow: var(--shadow-1);
+  transform: translateX(0); transition: transform var(--transition-med) ease;
+}
+.toggle.on { background: color-mix(in oklab, var(--brand), var(--surface-2) 65%); border-color: color-mix(in oklab, var(--brand), var(--border) 60%); }
+.toggle.on .knob { transform: translateX(18px); }
+
+/* Save bar */
+.savebar {
+  position: sticky; bottom: 0; margin-top: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  background: var(--surface-1); box-shadow: var(--shadow-2);
+  padding: 10px 12px; opacity: 0; transform: translateY(6px);
+  transition: opacity var(--transition-med) ease, transform var(--transition-med) ease;
+}
+.savebar.show { opacity: 1; transform: translateY(0); }
+.savebar .state { font-size: 13px; color: var(--text-muted); display: inline-flex; gap: 8px; align-items: center; }
+.savebar .state .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); display: inline-block; }
+
+/* Modals (shared) */
+.roles-modal__backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 900;
+}
+.roles-modal {
+  position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%);
+  width: min(560px, 92vw); max-height: 82vh;
+  display: grid; grid-template-rows: auto 1fr auto;
+  z-index: 901; border-radius: var(--radius-xl);
+  border: 1px solid var(--border); background: var(--surface-1); box-shadow: var(--shadow-2);
+}
+.roles-modal.warning .roles-modal__head h3 { color: var(--tone-amber-fg); }
+.roles-modal.danger  .roles-modal__head h3 { color: var(--tone-red-fg); }
+
+.roles-modal__head, .roles-modal__foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+}
+.roles-modal__foot { border-bottom: 0; border-top: 1px solid var(--border); }
+.roles-modal__head h3 { margin: 0; font-size: 14px; }
+
+.roles-modal__body { padding: 12px; overflow: auto; }
+.roles-modal .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.roles-modal .field { display: grid; gap: 6px; }
+.roles-modal .field > label { font-size: 12px; color: var(--text-muted); }
+.roles-modal .req { color: var(--tone-red-fg); }
+
+.r-input, .r-textarea {
+  width: 100%; padding: 8px 10px; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-2); color: var(--text);
+}

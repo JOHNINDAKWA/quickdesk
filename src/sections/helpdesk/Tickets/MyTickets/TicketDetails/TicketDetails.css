@@ -1,17 +1,20 @@
 /* =========================================================
-   QuickDesk — TicketDetail (polished layout)
-   - Card look, compact typography
-   - Left: thread scrolls; composer pinned at bottom
-   - Composer editor has a MAX-HEIGHT and its own scroll
-   - Right: sticky ticket properties with subtle sections
+   QuickDesk — TicketDetail (v2, with AI panel + resizers)
+   - 3-column flex layout: MAIN (issue+thread+composer), optional AI, ASIDE
+   - Resizable splitters (MAIN↔AI and (MAIN/AI)↔ASIDE)
+   - Pretty issue header (subject, meta, description, images)
+   - Sticky aside on wide screens
+   - Quill composer capped with internal scroll
    ======================================================= */
 
 /* ---------- Page shell ---------- */
 .td-root {
-  --card-radius: var(--radius-xl, 14px);
-  --card-shadow: var(--shadow-1, 0 1px 2px rgba(0,0,0,.06));
+  --card-radius: var(--radius-xl, 18px);
+  --card-shadow: var(--shadow-1);
   --td-editor-max: 260px;         /* cap the Quill editor height */
   --td-chrome-offset: 140px;      /* top bars height; tweak to fit your layout */
+  --splitter-w: 10px;             /* visual grab area width */
+  --splitter-hit: 16px;           /* larger hit area for pointer */
   display: grid;
   gap: 14px;
 }
@@ -30,6 +33,7 @@
 }
 
 .td-head__left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.td-head__right { display: inline-flex; gap: 8px; align-items: center; }
 
 .td-ref {
   padding: 3px 10px;
@@ -39,27 +43,19 @@
   background: var(--surface-2);
   color: var(--text);
 }
+.td-savestate { font-size: 12px; color: var(--text-muted); }
+.td-savestate.saving::before { content: "• "; color: var(--brand); }
 
+/* inline subject */
 .td-subject { min-width: 0; }
-
 .td-subject__display {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: transparent;
-  font-weight: 700;
-  cursor: text;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 12px; border: 1px solid transparent;
+  background: transparent; font-weight: 700; cursor: text;
 }
 .td-subject__display:hover { background: var(--surface-2); border-color: var(--border); }
 .td-subject__display svg { opacity: .7; }
-.td-subject__display span {
-  max-width: min(62vw, 900px);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
+.td-subject__display span { max-width: min(62vw, 900px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .td-subject__input {
   width: min(62vw, 900px);
   font: inherit; font-weight: 700;
@@ -71,32 +67,57 @@
   outline: none;
 }
 
-.td-head__right { display: inline-flex; gap: 8px; align-items: center; }
-.td-savestate { font-size: 12px; color: var(--text-muted); }
-.td-savestate.saving::before { content: "• "; color: var(--brand); }
-
-/* ---------- Main split ---------- */
+/* ---------- Main flex (resizable columns) ---------- */
 .td-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 14px;
+  display: flex;
+  gap: 0;                         /* splitters provide spacing */
   min-height: 0;
   height: calc(100vh - var(--td-chrome-offset));
 }
 
-/* LEFT: conversation card */
+/* When AI is open we have: MAIN | splitter | AI | splitter | ASIDE
+   When AI is closed: MAIN | splitter | ASIDE
+   Each section sets its own flex-basis inline from TSX. */
+.td-convo,
+.td-ai,
+.td-side {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* LEFT: conversation card (contains issue header + thread + composer) */
 .td-convo {
   display: grid;
-  grid-template-rows: 1fr auto;     /* thread scrolls, composer pinned */
-  min-height: 0;
+  grid-template-rows: auto 1fr auto;  /* issue header, thread (scrolls), composer */
   border: 1px solid var(--border);
   border-radius: var(--card-radius);
   background: var(--surface-1);
   box-shadow: var(--card-shadow);
-  overflow: hidden;                 /* the thread does the scrolling */
+  overflow: hidden;
 }
 
-/* Thread area (scroll) */
+/* ---------- Issue header (new) ---------- */
+.td-issue {
+  padding: 14px 14px 6px;
+  background:
+    radial-gradient(60rem 28rem at -10% -30%, color-mix(in oklab, var(--brand-weak), transparent 75%), transparent),
+    var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+.td-issue__head { display: grid; gap: 4px; }
+.td-issue__title { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: .2px; }
+.td-issue__meta { font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; }
+.td-issue__desc { margin: 8px 0 6px; font-size: 14px; line-height: 1.5; }
+.td-issue__desc p { margin: 6px 0; }
+.td-issue__images { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.td-issue__imgwrap {
+  display: block; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--surface-2);
+}
+.td-issue__imgwrap img { width: 100%; height: 120px; object-fit: cover; display: block; }
+.td-issue__divider { height: 8px; }
+
+/* ---------- Thread area (scroll) ---------- */
 .td-thread {
   padding: 12px;
   overflow: auto;
@@ -104,11 +125,11 @@
   scroll-behavior: smooth;
 }
 
-/* Message card (avatar + bubble look) */
+/* Message card */
 .td-msg {
   border: 1px solid var(--border);
   background: var(--surface-1);
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 10px 12px;
   margin: 10px 0;
   box-shadow: var(--shadow-0, 0 0 0 rgba(0,0,0,0));
@@ -117,20 +138,13 @@
   background: color-mix(in oklab, var(--brand-weak), var(--surface-1) 85%);
   border-color: color-mix(in oklab, var(--brand), var(--border) 65%);
 }
-.td-msg__meta {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
-}
+.td-msg__meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
 .td-msg__author { font-weight: 700; color: var(--text); }
 .td-msg__dot { opacity: .5; }
 .td-msg__badge {
-  margin-left: 4px;
-  padding: 2px 7px;
-  font-size: 11px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  text-transform: uppercase; letter-spacing: .02em;
+  margin-left: 4px; padding: 2px 7px; font-size: 11px;
+  border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface-2); text-transform: uppercase; letter-spacing: .02em;
 }
 .td-msg__body { font-size: 13px; line-height: 1.45; }
 .td-msg__body p { margin: 6px 0; }
@@ -138,106 +152,122 @@
 .td-att {
   padding: 4px 8px; font-size: 12px;
   border: 1px solid var(--border); border-radius: 10px;
-  background: var(--surface-2); color: var(--text);
-  text-decoration: none;
+  background: var(--surface-2); color: var(--text); text-decoration: none;
 }
 
-/* Composer (toolbar + editor + actions) */
+/* ---------- Composer (toolbar + editor + actions) ---------- */
 .td-composer {
   border-top: 1px solid var(--border);
   background: var(--surface-1);
   padding: 12px;
   display: grid;
-  grid-template-rows: auto auto auto; /* bar | editor | actions */
+  grid-template-rows: auto auto; /* bar+editor in one block, then actions row (combined in your markup) */
   gap: 10px;
 }
-
-.td-compose__bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-
+.td-compose__bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .td-files { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .td-files__list { display: inline-flex; gap: 6px; flex-wrap: wrap; }
-.chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 2px 8px; font-size: 12px;
-  border-radius: 999px; border: 1px solid var(--border);
-  background: var(--surface-2);
-}
-.chip__x {
-  width: 18px; height: 18px; display: grid; place-items: center;
-  border-radius: 999px; border: 1px solid var(--border); background: var(--surface-1);
-}
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; font-size: 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); }
+.chip__x { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-1); }
+.td-send { display: inline-flex; gap: 8px; }
 
-/* Quill: compact, with max-height + internal scroll */
-.td-composer .ql-toolbar {
-  border-radius: 10px 10px 0 0;
-  background: var(--surface-2);
-  border-color: var(--border);
-}
+/* Quill editor refinements */
+.td-composer .ql-toolbar { border-radius: 10px 10px 0 0; background: var(--surface-2); border-color: var(--border); }
 .td-composer .ql-container {
   border-radius: 0 0 10px 10px;
   border-color: var(--border);
   background: var(--surface-1);
   color: var(--text);
   font-size: 13px;
-
-  /* CRUCIAL: keep buttons visible by capping editor height */
   max-height: var(--td-editor-max);
   overflow: auto;
 }
 .td-composer .ql-editor { min-height: 120px; }
 
-/* Actions row with sticky-looking send on the right */
-.td-compose__actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+/* ---------- AI Helper panel ---------- */
+.td-ai {
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  background: var(--surface-1);
+  box-shadow: var(--card-shadow);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  min-height: 0;
+  overflow: hidden;
 }
-.td-send { display: inline-flex; gap: 8px; }
+.ai-pane { display: grid; grid-template-rows: auto auto auto 1fr; min-height: 0; }
+.ai-pane__head { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.ai-title { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.ai-pane__controls { padding: 10px 14px; border-bottom: 1px dashed var(--border); display: flex; gap: 8px; }
+.ai-pane__qa { padding: 10px 14px; border-bottom: 1px dashed var(--border); }
+.ai-input { display: grid; gap: 8px; }
+.ai-actions { display: flex; justify-content: flex-end; }
+.ai-pane__result { min-height: 0; overflow: auto; padding: 12px 14px; }
+.ai-result__body { font-size: 13px; line-height: 1.5; }
+.ai-result__body h4 { margin: 0 0 6px; font-size: 13px; }
+.ai-result__actions { margin-top: 10px; display: flex; gap: 8px; }
+
+/* ---------- Resizable splitters ---------- */
+.td-splitter {
+  position: relative;
+  width: var(--splitter-w);
+  flex: 0 0 var(--splitter-w);
+  cursor: col-resize;
+  user-select: none;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--brand), transparent 94%), transparent);
+}
+.td-splitter::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(calc((var(--splitter-hit) - var(--splitter-w)) / -2));
+  width: var(--splitter-hit);
+}
+.td-splitter::after {
+  content: "";
+  position: absolute; top: 50%; left: 50%;
+  width: 2px; height: 28px; border-radius: 2px;
+  background: color-mix(in oklab, var(--text-muted), transparent 40%);
+  transform: translate(-50%, -50%);
+  transition: background var(--transition-fast);
+}
+.td-splitter:hover::after,
+.td-splitter:active::after { background: color-mix(in oklab, var(--brand), var(--text-muted) 40%); }
+
+.td-splitter--main-ai { /* between MAIN and AI */ }
+.td-splitter--main-aside { /* between (MAIN/AI) and ASIDE */ }
+
+/* a11y: keyboard focus for the resizer (role=separator) */
+.td-splitter:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
 
 /* ---------- Right: properties (sticky) ---------- */
 .td-side {
-  position: sticky; top: 10px; align-self: start;
+  position: sticky; top: 10px; align-self: flex-start;
   max-height: calc(100vh - 20px);
   overflow: auto;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
-  padding: 12px;
 }
-
-.td-side__title {
-  font-weight: 700; margin: 0 0 8px; font-size: 14px;
-}
-.td-side__group {
-  display: grid; gap: 6px; margin-bottom: 10px;
-}
-.td-side__group > label {
-  font-size: 12px; color: var(--text-muted);
-}
+.td-side .td-side__inner { padding: 12px; }
+.td-side__group { display: grid; gap: 6px; margin: 0 0 10px; }
+.td-side__group > label { font-size: 12px; color: var(--text-muted); }
 .input, .textarea, .select {
-  width: 100%;
-  padding: 8px 10px; font-size: 13px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface-2);
-  color: var(--text);
+  width: 100%; padding: 8px 10px; font-size: 13px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-2); color: var(--text);
 }
 .textarea { resize: vertical; }
-.td-side .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-
 .td-side__meta {
-  margin-top: 6px; padding-top: 8px;
+  margin-top: 6px; padding: 8px 0 0;
   border-top: 1px dashed var(--border);
   display: grid; gap: 6px;
 }
-.td-side__meta .row {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  font-size: 13px;
-}
+.td-side__meta .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
 
 /* Escalation history list */
 .td-esc__list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -250,51 +280,50 @@
 .td-esc__item .top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .td-esc__item .badge { height: 18px; font-size: 11px; }
 
-/* ---------- Modal (escalate) ---------- */
-.td-modal__backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 90; }
-.td-modal {
-  position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%);
-  width: min(560px, 92vw); max-height: 82vh;
-  display: grid; grid-template-rows: auto 1fr auto;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-2);
-  border-radius: var(--card-radius);
-  z-index: 100;
-}
-.td-modal__head, .td-modal__foot {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-}
-.td-modal__foot { border-bottom: 0; border-top: 1px solid var(--border); }
-.td-modal__head h3 { margin: 0; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
-.td-modal__body { padding: 12px; overflow: auto; }
-.td-modal .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.td-modal .field { display: grid; gap: 6px; }
-.td-modal .field > label { font-size: 12px; color: var(--text-muted); }
-.td-modal .col-span-2 { grid-column: span 2; }
-.td-esc__history { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
-.td-esc__history summary { cursor: pointer; color: var(--text-muted); font-size: 12px; }
+/* ---------- SLA badges (tiny) ---------- */
+.badge.sla-ok       { background: var(--tone-green-bg); color: var(--tone-green-fg); border: 1px solid var(--tone-green-border); }
+.badge.sla-at_risk  { background: var(--tone-amber-bg); color: var(--tone-amber-fg); border: 1px solid var(--tone-amber-border); }
+.badge.sla-breached { background: var(--tone-red-bg); color: var(--tone-red-fg); border: 1px solid var(--tone-red-border); }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons (minor tweaks) ---------- */
 .btn { padding: 8px 12px; font-size: 13px; border-radius: 10px; }
 .btn-ghost { background: var(--surface-2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--surface-3); }
-.btn-danger { background: color-mix(in oklab, var(--tone-red-bg, #fee2e2), var(--surface-1) 20%); border: 1px solid var(--tone-red-border, #fecaca); color: var(--tone-red-fg, #991b1b); }
+.btn-secondary {
+  background: var(--tone-blue-bg);
+  color: var(--tone-blue-fg);
+  border: 1px solid var(--tone-blue-border);
+}
+.btn-secondary:hover {
+  filter: brightness(1.03);
+}
 
-/* ---------- Scrollbars (thread only) ---------- */
-.td-thread::-webkit-scrollbar { width: 8px; height: 8px; }
-.td-thread::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--text-muted), transparent 65%); border-radius: 8px; }
+/* ---------- Scrollbars (thread + ai result) ---------- */
+.td-thread::-webkit-scrollbar,
+.ai-pane__result::-webkit-scrollbar { width: 8px; height: 8px; }
+.td-thread::-webkit-scrollbar-thumb,
+.ai-pane__result::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--text-muted), transparent 65%); border-radius: 8px; }
 .td-thread { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--text-muted), transparent 65%) transparent; }
+.ai-pane__result { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--text-muted), transparent 65%) transparent; }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1200px) {
-  .td-main { grid-template-columns: 1fr; height: auto; }
+@media (max-width: 1280px) {
   .td-side { position: static; max-height: none; }
+}
+@media (max-width: 1100px) {
+  .td-main { flex-direction: column; height: auto; }
+  .td-splitter { display: none; }
+  .td-ai { order: 2; }
+  .td-side { order: 3; }
 }
 @media (max-width: 720px) {
   .td-head { padding: 10px; }
   .td-subject__display span, .td-subject__input { width: 100%; }
-  .td-modal .grid { grid-template-columns: 1fr; }
-  .td-modal .col-span-2 { grid-column: auto; }
+  .td-issue__images { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+/* ---------- Focus ring for splitters (a11y) ---------- */
+[role="separator"].td-splitter:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
 }
